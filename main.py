@@ -22,7 +22,7 @@ def openMatch(matchID):
     #Team Summary
     #TODO: TeamIDs and Values Hardcoded
     wb.components.append(CTitle("Team Summary"))
-    wb.components.append(CFieldCompareTeamValues(17))
+    wb.components.append(CFieldDiagramTeamValues(17))
     wb.components.append(CTimeline(17))
 
     #Player Summary
