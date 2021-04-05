@@ -17,13 +17,15 @@ def openMatch(matchID):
     db = Database()
     match = db.GetMatch(matchID)
     matchType = db.GetMatchType(matchID)
+    teamID = db.GetTeamID(matchID)
+    print(teamID)
     wb.components.append(CHeader(db.GetMapName(match[2]), "2-0", matchType[0], matchType[1], "/static/Images/Maps_Header/" + db.GetMapImageName(match[2]) + ".jpg"))
     
     #Team Summary
     #TODO: TeamIDs and Values Hardcoded
     wb.components.append(CTitle("Team Summary"))
-    wb.components.append(CFieldDiagramTeamValues(17))
-    wb.components.append(CTimeline(17))
+    wb.components.append(CFieldDiagramTeamValues(teamID))
+    wb.components.append(CTimeline(teamID))
 
     #Player Summary
     #TODO PlayerID's Hardcoded
@@ -34,7 +36,7 @@ def openMatch(matchID):
     wb.components.append(CFieldCircularProgressBar(Accuracy[0], float(Accuracy[1])))
 
     #All stats
-    heroStats = db.Submit("SELECT DISTINCT eventName FROM Events WHERE eventName Like 'HS%' AND eventValue != '0';").fetchall()
+    heroStats = db.Submit("SELECT DISTINCT eventName FROM tbl_Events WHERE eventName Like 'HS%' AND eventValue != '0';").fetchall()
     heroStats = [item[0] for item in heroStats]
     for stat in heroStats:
         Accuracy = db.GetPlayerSummary(97, stat)

@@ -48,7 +48,7 @@ class FileLoader():
 
     def __ConvertFileToList(self, filename: str) -> [[str]]:
         """Converts the file to a readable list format"""
-        with open (filename, "r") as myfile:
+        with open (filename, mode="r", encoding="utf-8") as myfile:
             data = myfile.read().replace("\"", "").replace("[", "").replace("]","").splitlines()
         return [item.split(" , ") for item in data]
 
@@ -68,10 +68,10 @@ class FileLoader():
 
     def ResetDatabase(self):
         """Deletes every non-permanent entry in the Database. Use with caution"""
-        self.db.Submit("DELETE FROM Events")
-        self.db.Submit("DELETE FROM Match")
-        self.db.Submit("DELETE FROM Player")
-        self.db.Submit("DELETE FROM Team")
+        self.db.Submit("DELETE FROM tbl_Events")
+        self.db.Submit("DELETE FROM tbl_Match")
+        self.db.Submit("DELETE FROM tbl_Player")
+        self.db.Submit("DELETE FROM tbl_Team")
         self.db.Commit()
 
 #FileLoader().ResetDatabase()

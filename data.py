@@ -25,56 +25,56 @@ class Database(Singleton):
     #Matches
     def GetMatchDates(self) -> [str]:
         """Returns a list of date strings of all the matches"""
-        matchDates = self.Submit("SELECT DISTINCT matchDate FROM Match ORDER BY matchDate DESC;").fetchall()
+        matchDates = self.Submit("SELECT DISTINCT matchDate FROM tbl_Match ORDER BY matchDate DESC;").fetchall()
         return [item[0] for item in matchDates]
     def GetMatchesOnDate(self, date: str) -> [(int, int, int, str)]:
         """Returns all the matches on a specific date"""
-        return self.Submit("SELECT * FROM Match WHERE matchDate = '" + date + "'").fetchall()
+        return self.Submit("SELECT * FROM tbl_Match WHERE matchDate = '" + date + "'").fetchall()
     def GetMatch(self, matchID: int) -> (int, int, int, str):
         """Gets the data from a match for a specific match id"""
-        return self.Submit("SELECT * FROM Match WHERE matchID = '" + str(matchID) + "'").fetchone()
+        return self.Submit("SELECT * FROM tbl_Match WHERE matchID = '" + str(matchID) + "'").fetchone()
     def GetMatchType(self, matchID: int) -> (str, str):
         """Returns the typename and the typecolor for a match"""
-        return self.Submit("SELECT typeName, typeColor FROM Match INNER JOIN MatchType ON Match.matchTypeID_F = MatchType.typeID WHERE matchID = " + str(matchID)).fetchone()
+        return self.Submit("SELECT typeName, typeColor FROM tbl_Match INNER JOIN cst_MatchType ON tbl_Match.matchTypeID_F = cst_MatchType.typeID WHERE matchID = " + str(matchID)).fetchone()
     def GetMatchLength(self, matchID: int) -> str:
         """Returns the length of a match in the time format 00:00:00"""
-        return self.Submit("SELECT Max(gameTime) FROM Team INNER JOIN (Events INNER JOIN Player ON Events.playerID_F = Player.playerID) ON Team.teamID = Player.teamID_F WHERE Team.matchID_F = " + str(matchID)).fetchone()[0]
+        return self.Submit("SELECT Max(gameTime) FROM tbl_Team INNER JOIN (tbl_Events INNER JOIN tbl_Player ON tbl_Events.playerID_F = tbl_Player.playerID) ON tbl_Team.teamID = tbl_Player.teamID_F WHERE tbl_Team.matchID_F = " + str(matchID)).fetchone()[0]
 
     #Players
     def GetPlayerID(self, teamID: int, playerSlot: int, playerName: str = None) -> int:
         """Try to find a specific player ID by team, slot and name"""
-        sqlStr = "SELECT playerID FROM Player WHERE teamID_F = " & str(teamID) & " AND playerSlot = " & str(playerSlot)
+        sqlStr = "SELECT playerID FROM tbl_Player WHERE teamID_F = " & str(teamID) & " AND playerSlot = " & str(playerSlot)
         if teamID != None:
             sqlStr += " AND playerName = '" & str(playerName) & "'"
         return self.Submit(sqlStr).fetchone()[0]
     def GetPlayersOfTeam(self, teamID: int) -> (int, str):
         """Returns all id's and names of players in a specific team"""
-        return self.Submit("SELECT playerID, playerName FROM Player WHERE teamID_F = " + str(teamID) + " ORDER BY playerName").fetchall()
+        return self.Submit("SELECT playerID, playerName FROM tbl_Player WHERE teamID_F = " + str(teamID) + " ORDER BY playerName").fetchall()
     def GetPlayerName(self, playerID: int) -> str:
         """Get the name of a specific player"""
-        return self.Submit("SELECT playerName FROM Player WHERE playerID = " + str(playerID)).fetchone()[0]
+        return self.Submit("SELECT playerName FROM tbl_Player WHERE playerID = " + str(playerID)).fetchone()[0]
 
     #Player Summary Stats
     def GetPlayerHeroSummary(self, playerID: int, hero: str, eventName: str) -> (str, float):
         """Returns the text and value for a specific player stat, for a specific hero"""
         if not eventName.startswith("HS_"):
             return None
-        return self.Submit("SELECT eventText, eventValue FROM Events INNER JOIN EventName ON Events.eventName = EventName.eventName WHERE playerID_F = " + str(playerID) + " AND eventTarget = '" + str(hero) + "' AND Events.eventName = '" + str(eventName) + "'").fetchone()
+        return self.Submit("SELECT eventText, eventValue FROM tbl_Events INNER JOIN cst_EventName ON tbl_Events.eventName = cst_EventName.eventName WHERE playerID_F = " + str(playerID) + " AND eventTarget = '" + str(hero) + "' AND tbl_Events.eventName = '" + str(eventName) + "'").fetchone()
     def GetPlayerSummary(self, playerID: int, eventName: str) -> (str, float):
         """Returns the text and value for a specific player stat"""
         if not eventName.startswith("HS_"):
             return None
-        return self.Submit("SELECT eventText, Sum(eventValue) FROM Events INNER JOIN EventName ON Events.eventName = EventName.eventName WHERE playerID_F = " + str(playerID) + " AND Events.eventName = '" + str(eventName) + "'").fetchone()
+        return self.Submit("SELECT eventText, Sum(eventValue) FROM tbl_Events INNER JOIN cst_EventName ON tbl_Events.eventName = cst_EventName.eventName WHERE playerID_F = " + str(playerID) + " AND tbl_Events.eventName = '" + str(eventName) + "'").fetchone()
     def GetAllSummaryTypes(self) -> [(str, str)]:
-        return self.Submit("SELECT * FROM EventName ORDER BY eventText").fetchall()
+        return self.Submit("SELECT * FROM cst_EventName ORDER BY eventText").fetchall()
 
     #Events
     def GetEventName(self, eventName: str) -> str:
         if not eventName.startswith("HS_"):
             return None
-        return self.Submit("SELECT eventText FROM EventName WHERE eventName = '" + str(eventName) + "'").fetchone()[0]
+        return self.Submit("SELECT eventText FROM tbl_EventName WHERE eventName = '" + str(eventName) + "'").fetchone()[0]
     def GetEvents(self, eventName: str = None, eventPlayerID: int = None) -> [(int, str, int, str, str, str)]:
-        sqlStr = "SELECT * FROM Events"
+        sqlStr = "SELECT * FROM tbl_Events"
         if eventName != None or eventPlayerID != None:
             sqlStr += " WHERE "
             if(eventName != None):
@@ -86,15 +86,15 @@ class Database(Singleton):
 
     #Teams
     def GetTeamID(self, matchID: int, teamName: str = None) -> int:
-        sqlStr = "SELECT teamID FROM Team WHERE matchID_F = " + str(matchID) + ((" AND teamName = '" & str(teamName) & "'") if teamName != None else "")
+        sqlStr = "SELECT teamID FROM tbl_Team WHERE matchID_F = " + str(matchID) + ((" AND teamName = '" & str(teamName) & "'") if teamName != None else "")
         return self.Submit(sqlStr).fetchone()[0]
     def GetTeamIDOfPlayer(self, playerID: int) -> int:
-        return self.Submit("SELECT teamID_F FROM Player WHERE playerID = " + str(playerID)).fetchone()[0]
+        return self.Submit("SELECT teamID_F FROM tbl_Player WHERE playerID = " + str(playerID)).fetchone()[0]
 
     #Maps
     def GetMapName(self, mapID: int) -> str:
         """Returns the readable name of the map"""
-        return self.Submit("SELECT mapName FROM Maps WHERE mapID = " + str(mapID)).fetchone()[0]
+        return self.Submit("SELECT mapName FROM cst_Maps WHERE mapID = " + str(mapID)).fetchone()[0]
     def GetMapImageName(self, mapID: int) -> str:
         """Returns the image name of the map, to show images on the website"""
         return self.GetImageName(self.GetMapName(mapID))
@@ -114,30 +114,31 @@ class Database(Singleton):
 
     #Write data to database
     def CreateMatch(self, matchTypeID: int = 2, mapID_F: int = 19, matchDate: str = date.today()) -> int:
-        self.Submit("INSERT INTO Match(matchTypeID_F, mapID_F, matchDate) VALUES(" + str(matchTypeID) + ", " + str(mapID_F) + ",'" + str(matchDate) + "')")
-        return self.Submit("SELECT Max(matchID) FROM Match").fetchone()[0]
+        self.Submit("INSERT INTO tbl_Match(matchTypeID_F, mapID_F, matchDate) VALUES(" + str(matchTypeID) + ", " + str(mapID_F) + ",'" + str(matchDate) + "')")
+        return self.Submit("SELECT Max(matchID) FROM tbl_Match").fetchone()[0]
     def CreateTeam(self, matchID: int = None, teamName: str = None) -> int: 
         #Select last created match if none given
         if matchID == None:
-            matchID = self.Submit("SELECT Max(matchID) FROM Match").fetchone()[0]
+            matchID = self.Submit("SELECT Max(matchID) FROM tbl_Match").fetchone()[0]
         
         #Try to generate a team name if none was given
         if teamName == None:
-            teamName = self.Submit("SELECT teamName FROM Team WHERE matchID_F = " + str(matchID) + " ORDER BY teamID DESC").fetchone()[0]
+            teamName = self.Submit("SELECT teamName FROM tbl_Team WHERE matchID_F = " + str(matchID) + " ORDER BY teamID DESC").fetchone()
             if teamName != None:
+                teamName = teamName[0]
                 if re.match("Team [1-24]", teamName):
-                    teamName = "Team " & str(int(teamName.Split(" ")[1])+1)
+                    teamName = "Team " + str(int(teamName.split(" ")[1])+1)
             else:
                 teamName = "Team 1"
-        self.Submit("INSERT INTO Team(matchID_F, teamName) VALUES(" + str(matchID) + ", '" + str(teamName) + "')")
-        return self.Submit("SELECT Max(teamID) FROM Team").fetchone()[0]
+        self.Submit("INSERT INTO tbl_Team(matchID_F, teamName) VALUES(" + str(matchID) + ", '" + str(teamName) + "')")
+        return self.Submit("SELECT Max(teamID) FROM tbl_Team").fetchone()[0]
     def CreatePlayer(self, playerName, playerSlot, teamID = None) -> int:
         if teamID == None:
-            teamID = self.Submit("SELECT Max(teamID) FROM Team").fetchone()[0]
-        self.Submit("INSERT INTO Player(teamID_F, playerName, playerSlot) VALUES(" + str(teamID) + ", '" + str(playerName) + "', " + str(playerSlot) + ")")
-        return self.Submit("SELECT Max(playerID) FROM Player").fetchone()[0]
+            teamID = self.Submit("SELECT Max(teamID) FROM tbl_Team").fetchone()[0]
+        self.Submit("INSERT INTO tbl_Player(teamID_F, playerName, playerSlot) VALUES(" + str(teamID) + ", '" + str(playerName) + "', " + str(playerSlot) + ")")
+        return self.Submit("SELECT Max(playerID) FROM tbl_Player").fetchone()[0]
     def CreateEvent(self, gameTime, playerID_F, eventName, eventValue = "", eventTarget = None):
-        self.Submit("INSERT INTO Events(gameTime, playerID_F, eventName, eventValue, eventTarget) VALUES('" + str(gameTime) + "', " + str(playerID_F) + ", '" + str(eventName) + "', '" + str(eventValue) + "', '" + str(eventTarget) + "')")
+        self.Submit("INSERT INTO tbl_Events(gameTime, playerID_F, eventName, eventValue, eventTarget) VALUES('" + str(gameTime) + "', " + str(playerID_F) + ", '" + str(eventName) + "', '" + str(eventValue) + "', '" + str(eventTarget) + "')")
 
     #Wrapper to commit the database changes
     def Commit(self):
