@@ -1,0 +1,14 @@
+{
+  "name": "overwatchpythonocr",
+  "version": "0.0.1",
+  "description": "A Overwatch Stat analysation tool",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Saphirah",
+  "license": "ISC",
+  "dependencies": {
+    "chart.js": "^3.0.1"
+  }
+}
