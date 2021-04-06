@@ -72,6 +72,8 @@ rule "Seita Scrim lobby":
     hudSubheader(null if isGameInProgress() else getAllPlayers(), "Press {0} + {1}: Adds 5 min break timer".format(buttonString(Button.INTERACT), buttonString(Button.ULTIMATE)), HudPosition.RIGHT, 24, Color.WHITE, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.NEVER)
     hudSubheader(null if isGameInProgress() else getAllPlayers(), "Press {0}: Teleport (works only in Defense, in spawn)".format(buttonString(Button.MELEE)), HudPosition.RIGHT, 25, Color.ORANGE, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.NEVER)
     hudSubheader(null if isGameInProgress() else getAllPlayers(), "Hold {0}: Change hero (works only in Defense)".format(buttonString(Button.RELOAD)), HudPosition.RIGHT, 26, Color.YELLOW, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.NEVER)
+    
+    #Spectator Help Text
     hudSubtext(null, " ", HudPosition.RIGHT, 27, Color.WHITE, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.ALWAYS)
     hudSubheader(null, "Statistics are only shown to Spectators", HudPosition.RIGHT, 28, Color.AQUA, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.ALWAYS)
     hudSubheader(null, "DPS&Tanks: Damage Done - Damage Taken - Ults used  - Deaths", HudPosition.RIGHT, 29, Color.WHITE, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.ALWAYS)
@@ -81,6 +83,8 @@ rule "Seita Scrim lobby":
     for Index in range(0,6):
         hudSubtext(null, l"{0} {1}".format(heroIcon(getPlayersInSlot(evalOnce(Index), Team.1).getCurrentHero()), l"{0} - {1} - {2}".format(round(getPlayersInSlot(evalOnce(Index), Team.1).getStatistic(Stat.DAMAGE_DEALT)), round(getPlayersInSlot(evalOnce(Index), Team.1).getStatistic(Stat.HEALING_DEALT)) if getPlayersInSlot(evalOnce(Index), Team.1).getCurrentHero() in getSupportHeroes() == true else round(getPlayersInSlot(evalOnce(Index), Team.1).getStatistic(Stat.DAMAGE_TAKEN)), l"{0} - {1}".format(getPlayersInSlot(evalOnce(Index), Team.1).getStatistic(Stat.ULTIMATES_USED), getPlayersInSlot(evalOnce(Index), Team.1).getStatistic(Stat.DEATHS)))), HudPosition.LEFT, 1, Color.BLUE, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.ALWAYS)
         hudSubtext(null, l"{0} {1}".format(heroIcon(getPlayersInSlot(evalOnce(Index), Team.2).getCurrentHero()), l"{0} - {1} - {2}".format(round(getPlayersInSlot(evalOnce(Index), Team.2).getStatistic(Stat.DAMAGE_DEALT)), round(getPlayersInSlot(evalOnce(Index), Team.2).getStatistic(Stat.HEALING_DEALT)) if getPlayersInSlot(evalOnce(Index), Team.2).getCurrentHero() in getSupportHeroes() == true else round(getPlayersInSlot(evalOnce(Index), Team.2).getStatistic(Stat.DAMAGE_TAKEN)), l"{0} - {1}".format(getPlayersInSlot(evalOnce(Index), Team.2).getStatistic(Stat.ULTIMATES_USED), getPlayersInSlot(evalOnce(Index), Team.2).getStatistic(Stat.DEATHS)))), HudPosition.RIGHT, 1, Color.RED, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.ALWAYS)
+    
+    #Save Gamemode
     switch(getCurrentGamemode()):
         case Gamemode.ESCORT:
             GameMode = 1
@@ -116,9 +120,9 @@ rule "Game in Progress: Remove HUD, Reset variables":
     @Condition isGameInProgress() == true
     ResetVariables()
 
-/*
-rule "Ready Check":
-*/
+
+#rule "Ready Check":
+
 
 rule "Both Teams Ready: Match starts in 5 sec, Remove HUD, Reset variables":
     @Condition isGameInProgress() == false
@@ -186,9 +190,9 @@ rule "Crouch + Interact: Team 2 Ready":
     else:
         smallMessage(getAllPlayers(), l"{0} {1}".format(eventPlayer, "unreadied their team"))
 
-/*
-rule "Setting Score after failed attacks":
-*/
+
+#rule "Setting Score after failed attacks":
+
 
 rule "Round Counter":
     @Condition isGameInProgress() == false
@@ -292,6 +296,7 @@ rule "Setup":
     S_Debug = createWorkshopSetting(bool, "DEBUG", "Enable Debug Mode", false, 0)
     V_Nametag = "EV_LoadMap"
     V_Value = getCurrentMap()
+    V_Target = ""
     Log()
 
 
@@ -424,7 +429,7 @@ rule "Team achieved point":
     else:
         Team2Score = teamScore(eventPlayer.getTeam())
     V_Nametag = "EV_Scored"
-    V_Value = Team1Score
+    V_Value = teamScore(eventPlayer.getTeam())
     V_Target = eventPlayer.getTeam()
     Log()
 
