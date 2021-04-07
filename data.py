@@ -28,13 +28,13 @@ class Database(Singleton):
         matchDates = self.Submit("SELECT DISTINCT matchDate FROM tbl_Match ORDER BY matchDate DESC;").fetchall()
         return [item[0] for item in matchDates]
     def GetMatchesOnDate(self, date: str) -> [(int, int, int, str)]:
-        """Returns all the matches on a specific date"""
+        """Returns all the matches on a specific date (matchID, matchTypeID_F, mapID_F, matchDate)"""
         return self.Submit("SELECT * FROM tbl_Match WHERE matchDate = '" + date + "'").fetchall()
     def GetMatch(self, matchID: int) -> (int, int, int, str):
-        """Gets the data from a match for a specific match id"""
+        """Returns matchID, matchTypeID_F, mapID_F, matchDate"""
         return self.Submit("SELECT * FROM tbl_Match WHERE matchID = '" + str(matchID) + "'").fetchone()
     def GetMatchType(self, matchID: int) -> (str, str):
-        """Returns the typename and the typecolor for a match"""
+        """Returns typeName, typeColor"""
         return self.Submit("SELECT typeName, typeColor FROM tbl_Match INNER JOIN cst_MatchType ON tbl_Match.matchTypeID_F = cst_MatchType.typeID WHERE matchID = " + str(matchID)).fetchone()
     def GetMatchLength(self, matchID: int) -> str:
         """Returns the length of a match in the time format 00:00:00"""
@@ -53,6 +53,9 @@ class Database(Singleton):
     def GetPlayerName(self, playerID: int) -> str:
         """Get the name of a specific player"""
         return self.Submit("SELECT playerName FROM tbl_Player WHERE playerID = " + str(playerID)).fetchone()[0]
+    def GetPlayer(self, playerID: int) -> (int, int, str, int):
+        """Returns playerID, teamID_F, playerName, playerSlot"""
+        return self.Submit("SELECT * FROM tbl_Player WHERE playerID = " + str(playerID)).fetchone()
 
     #Player Summary Stats
     def GetPlayerHeroSummary(self, playerID: int, hero: str, eventName: str) -> (str, float):
@@ -74,6 +77,7 @@ class Database(Singleton):
             return None
         return self.Submit("SELECT eventText FROM tbl_EventName WHERE eventName = '" + str(eventName) + "'").fetchone()[0]
     def GetEvents(self, eventName: str = None, eventPlayerID: int = None) -> [(int, str, int, str, str, str)]:
+        """Returns eventID, gameTime, playerID_F, eventName, eventValue, eventTarget"""
         sqlStr = "SELECT * FROM tbl_Events"
         if eventName != None or eventPlayerID != None:
             sqlStr += " WHERE "
@@ -90,6 +94,9 @@ class Database(Singleton):
         return self.Submit(sqlStr).fetchone()[0]
     def GetTeamIDOfPlayer(self, playerID: int) -> int:
         return self.Submit("SELECT teamID_F FROM tbl_Player WHERE playerID = " + str(playerID)).fetchone()[0]
+    def GetTeam(self, teamID: int) -> (int, int, str, str):
+        """Returns teamID, matchID_F, teamScore, teamName"""
+        return self.Submit("SELECT * FROM tbl_Team WHERE teamID = " + str(teamID)).fetchone()
 
     #Maps
     def GetMapName(self, mapID: int) -> str:
@@ -191,7 +198,7 @@ class Heroes():
     ZENYATTA = 31
 
     def GetHeroName(index):
-        return ["Ana", "Ashe", "Baptiste", "Bastion", "Brigitte", "Dva", "Doomfist", "Echo", "Genji", "Hanzo", "Junkrat", "Lucio", "Mccree", "Mei", "Mercy", "Moira", "Orisa", "Pharah", "Reaper", "Reinhardt", "Roadhog", "Sigma", "Soldier76", "Sombra", "Symmetra", "Torbjörn", "Tracer", "Widowmaker", "Winston", "Wreckingball", "Zarya", "Zenyatta"][index]
+        return ["Ana", "Ashe", "Baptiste", "Bastion", "Brigitte", "Dva", "Doomfist", "Echo", "Genji", "Hanzo", "Junkrat", "Lúcio", "Mccree", "Mei", "Mercy", "Moira", "Orisa", "Pharah", "Reaper", "Reinhardt", "Roadhog", "Sigma", "Soldier76", "Sombra", "Symmetra", "Torbjörn", "Tracer", "Widowmaker", "Winston", "Wreckingball", "Zarya", "Zenyatta"][index]
 
 #Same as above
 class Maps():

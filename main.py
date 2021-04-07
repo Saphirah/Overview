@@ -10,6 +10,19 @@ import sqlite3 as sl
 app = Flask(__name__)
 
 #TODO: put webserver into seperate py file
+@app.route('/player/<playerID>')
+def openPlayer(playerID):
+    db = Database()
+    player = db.GetPlayer(playerID)
+    team = db.GetTeam(player[1])
+    match = db.GetMatch(team[1])
+    matchType = db.GetMatchType(match[0])
+    playerName = db.GetPlayerName(playerID)
+    wb = WebsiteBuilder("StatTrack - Player - " + playerName)
+    wb.components.append(CHeader(playerName, db.GetMapName(match[2]), matchType[0], matchType[1], "/static/Images/Maps_Header/" + db.GetMapImageName(match[2]) + ".jpg"))
+    return wb.Draw()
+
+#TODO: put webserver into seperate py file
 @app.route('/match/<matchID>')
 def openMatch(matchID):
     """Build the match preview page"""
@@ -18,11 +31,9 @@ def openMatch(matchID):
     match = db.GetMatch(matchID)
     matchType = db.GetMatchType(matchID)
     teamID = db.GetTeamID(matchID)
-    print(teamID)
     wb.components.append(CHeader(db.GetMapName(match[2]), "2-0", matchType[0], matchType[1], "/static/Images/Maps_Header/" + db.GetMapImageName(match[2]) + ".jpg"))
     
     #Team Summary
-    #TODO: TeamIDs and Values Hardcoded
     wb.components.append(CTitle("Team Summary"))
     wb.components.append(CFieldDiagramTeamValues(teamID))
     wb.components.append(CTimeline(teamID))
