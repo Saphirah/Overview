@@ -191,14 +191,24 @@ class CTimeline(WebsiteComponent):
         for player in self.playerIDs:
             returnStr += """
             <div>
-                <div class=\"timelineFrame\" style=\"width: 16%; border-top-right-radius: 0; border-bottom-right-radius: 0;  height: 13px;\">""" + player[1] + """</div>
+                <div class=\"timelineFrame\" style=\"width: 16%; border-top-right-radius: 0; border-bottom-right-radius: 0;  height: 13px;margin-right: 3px;\">""" + player[1] + """</div>
                 <div class=\"timelineFrame\" style=\"width: 79%; border-top-left-radius: 0; border-bottom-left-radius: 0; padding: 5px; height: 43px;\">
-                    <svg height="44px" style="width: 90%; padding: 0px;">"""
+                    <svg height="44px" style="width: 90%; padding: 0px; overflow: visible;">"""
             events = self.db.GetEvents("EV_Died", player[0])
             for death in events:
                 deathTimePercent = int(self.db.FormatTimeToSeconds(death[1]) / matchLength * 100)
                 #returnStr += "<circle cx=\"" + str(deathTimePercent) + "%\" cy=\"50%\" r=\"8px\" fill=\"red\"/>"
                 returnStr += "<image x=\"" + str(deathTimePercent) + "%\" y=\"14%\" href=\"/static/Images/Icons/skull.png\" height=\"35px\" width=\"25px\"/>"
+            events = self.db.GetEvents("EV_UsedAbility_Ultimate", player[0])
+            for ult in events:
+                deathTimePercent = int(self.db.FormatTimeToSeconds(ult[1]) / matchLength * 100)
+                #returnStr += "<circle cx=\"" + str(deathTimePercent) + "%\" cy=\"50%\" r=\"8px\" fill=\"red\"/>"
+                returnStr += "<image x=\"" + str(deathTimePercent) + "%\" y=\"14%\" href=\"/static/Images/Icons/ultimates/" + self.db.GetCharacterOnTimestamp(player[0], ult[1]).lower().replace(" ", "").replace(".", "")  + ".png\" height=\"35px\" width=\"25px\"/>"
+            events = self.db.GetEvents("EV_SwitchedHero", player[0])
+            for ult in events:
+                deathTimePercent = int(self.db.FormatTimeToSeconds(ult[1]) / matchLength * 100)
+                #returnStr += "<circle cx=\"" + str(deathTimePercent) + "%\" cy=\"50%\" r=\"8px\" fill=\"red\"/>"
+                returnStr += "<image x=\"" + str(deathTimePercent) + "%\" y=\"0%\" href=\"/static/Images/Icons/characters/" + ult[4].lower().replace(" ", "").replace(".", "")  + ".png\" height=\"45px\" width=\"30px\"/>"
             returnStr +="""
                     </svg>
                 </div>

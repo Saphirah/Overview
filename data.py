@@ -99,6 +99,10 @@ class Database(Singleton):
         """Returns the image name of the map, to show images on the website"""
         return self.GetImageName(self.GetMapName(mapID))
 
+    #Character
+    def GetCharacterOnTimestamp(self, playerID: int, timestamp: str) -> str:
+        return self.Submit("SELECT eventValue FROM tbl_Events WHERE playerID_F = " + str(playerID) + " AND eventName = 'EV_SwitchedHero' AND gameTime < '" + str(timestamp) + "' ORDER BY gameTime DESC").fetchone()[0]
+
     #Format various strings
     def FormatDate(self, date: str) -> str:
         nums = date.split(".")
