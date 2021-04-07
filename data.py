@@ -1,5 +1,5 @@
 import sqlite3 as sl
-from datetime import date
+from datetime import date, timedelta
 import random, re
 
 class Singleton(object):
@@ -105,6 +105,12 @@ class Database(Singleton):
         return nums[2] + "-" + nums[1] + "-" + nums[0]
     def FormatTimeToSeconds(self, timeStr: str) -> int:
         return sum(x * int(t) for x, t in zip([3600, 60, 1], timeStr.split(":"))) 
+    def FormatSecondsToTime(self, seconds: int) -> str:
+        return "{:0>8}".format(str(timedelta(seconds=seconds)))
+    def ShortenTime(self, timeStr: str) -> str:
+        if timeStr.startswith("00:"):
+            return timeStr[3:]
+        return timeStr
     def GetImageName(self, name: str) -> str:
         return name.lower().replace(" ", "")
 

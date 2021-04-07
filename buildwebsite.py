@@ -173,12 +173,35 @@ class CTimeline(WebsiteComponent):
         self.seed = random.randint(0, 1000000)
 
     def Draw(self):
-        returnStr = "<div class=\"longframe\" style=\"padding-left: 0px; padding-right: 0px;\">"
+        matchID = self.db.Submit("SELECT matchID_F FROM tbl_Team WHERE teamID = " + str(self.teamID)).fetchone()[0]
+        matchLength = self.db.FormatTimeToSeconds(self.db.GetMatchLength(matchID))
+        returnStr = """
+        <div class=\"longframe\" style=\"padding-left: 20px; padding-right: 0px;\">
+            <svg height="22px" style="width: 100%; padding: 0px; margin-top: 15px;">
+                <g fill="none" text-anchor="middle">
+                    """
+        #Create Timeline Header
+        for x in range(8): 
+            percent = 30 + 70/7*x - 10
+            returnStr +="<line stroke=\"white\" x1=\"" + str(percent) + "%\" x2=\"" + str(percent) +  "%\" y1=\"70%\" y2=\"100%\" style=\"stroke-width:2;\"></line>"
+            returnStr +="<text fill=\"white\" x=\"" + str(percent) + "%\" y=\"50%\">" + str(self.db.ShortenTime(self.db.FormatSecondsToTime(int(matchLength * x / 7)))) + "</text>"
+        returnStr +="""
+                </g>
+            </svg>"""
         for player in self.playerIDs:
             returnStr += """
             <div>
-                <div class=\"timelineFrame\" style=\"width: 100px\">""" + player[1] + """</div>
-                <div class=\"timelineFrame\" style=\"width: 560px\"></div>
+                <div class=\"timelineFrame\" style=\"width: 16%; border-top-right-radius: 0; border-bottom-right-radius: 0;  height: 13px;\">""" + player[1] + """</div>
+                <div class=\"timelineFrame\" style=\"width: 79%; border-top-left-radius: 0; border-bottom-left-radius: 0; padding: 5px; height: 43px;\">
+                    <svg height="44px" style="width: 90%; padding: 0px;">"""
+            events = self.db.GetEvents("EV_Died", player[0])
+            for death in events:
+                deathTimePercent = int(self.db.FormatTimeToSeconds(death[1]) / matchLength * 100)
+                #returnStr += "<circle cx=\"" + str(deathTimePercent) + "%\" cy=\"50%\" r=\"8px\" fill=\"red\"/>"
+                returnStr += "<image x=\"" + str(deathTimePercent) + "%\" y=\"14%\" href=\"/static/Images/Icons/skull.png\" height=\"35px\" width=\"25px\"/>"
+            returnStr +="""
+                    </svg>
+                </div>
             </div>"""
         returnStr += "</div>"
         return returnStr
