@@ -329,7 +329,7 @@ def Log():
     V_Target = l""
 
 
-rule "Switched Hero":
+rule "Events - Switched Hero":
     @Event eachPlayer
     @Condition eventPlayer.hasSpawned() == true
     @Condition eventPlayer.CurrentHero != eventPlayer.getCurrentHero()
@@ -342,7 +342,7 @@ rule "Switched Hero":
         eventPlayer.PlayedHeroes.append(eventPlayer.getCurrentHero())
 
 
-rule "Player Joined Match":
+rule "Events - Player Joined Match":
     @Event playerJoined
     @Condition createWorkshopSetting(bool, "Enable Stats", "Player joined Match", true, 0) == true
     V_Nametag = "EV_PlayerJoinedMatch"
@@ -350,7 +350,7 @@ rule "Player Joined Match":
     Log()
 
 
-rule "Player Left Match":
+rule "Events - Player Left Match":
     @Event playerLeft
     @Condition createWorkshopSetting(bool, "Enable Stats", "Player left match", true, 0) == true
     V_Nametag = "EV_PlayerLeftMatch"
@@ -358,7 +358,7 @@ rule "Player Left Match":
     Log()
 
 
-rule "Player Died":
+rule "Events - Player Died":
     @Event playerDied
     @Condition createWorkshopSetting(bool, "Enable Stats", "Player Died", true, 0) == true
     V_Nametag = "EV_Died"
@@ -366,7 +366,7 @@ rule "Player Died":
     Log()
 
 
-rule "Ability 1":
+rule "Events - Ability 1":
     @Event eachPlayer
     @Condition eventPlayer.isUsingAbility1() == true
     @Condition createWorkshopSetting(bool, "Enable Stats", "Used Ability 1", true, 0) == true
@@ -374,7 +374,7 @@ rule "Ability 1":
     Log()
 
 
-rule "Ability 2":
+rule "Events - Ability 2":
     @Event eachPlayer
     @Condition eventPlayer.isUsingAbility2() == true
     @Condition createWorkshopSetting(bool, "Enable Stats", "Used Ability 2", true, 0) == true
@@ -382,14 +382,14 @@ rule "Ability 2":
     Log()
 
 
-rule "Ability Ultimate":
+rule "Events - Ability Ultimate":
     @Event eachPlayer
     @Condition eventPlayer.isUsingUltimate() == true
     @Condition createWorkshopSetting(bool, "Enable Stats", "Used Ultimate", true, 0) == true
     V_Nametag = "EV_UsedAbility_Ultimate"
     Log()
 
-rule "Final Blows":
+rule "Events - Final Blows":
     @Event playerDealtFinalBlow
     @Condition createWorkshopSetting(bool, "Enable Stats", "Final Blow", true, 0) == true
     V_Nametag = "EV_FinalBlow"
@@ -397,7 +397,7 @@ rule "Final Blows":
     Log()
 
 
-rule "Kills":
+rule "Events - Kills":
     @Event playerEarnedElimination
     @Condition createWorkshopSetting(bool, "Enable Stats", "Kills/Assists", true, 0) == true
     V_Nametag = "EV_Kill"
@@ -405,7 +405,7 @@ rule "Kills":
     Log()
 
 
-rule "Received Knockback":
+rule "Events - Received Knockback":
     @Event playerReceivedKnockback
     @Condition createWorkshopSetting(bool, "Enable Stats", "Received Knockbacks", true, 0) == true
     V_Nametag = "EV_Knockback_Received"
@@ -413,7 +413,7 @@ rule "Received Knockback":
     Log()
 
 
-rule "Dealt Knockback":
+rule "Events - Dealt Knockback":
     @Event playerDealtKnockback
     @Condition createWorkshopSetting(bool, "Enable Stats", "Dealt Knockbacks", true, 0) == true
     V_Nametag = "EV_Knockback_Dealt"
@@ -421,7 +421,7 @@ rule "Dealt Knockback":
     Log()
 
 
-rule "Team achieved point":
+rule "Events - Team achieved point":
     @Event eachPlayer
     @Condition teamScore(eventPlayer.getTeam()) > (Team1Score if eventPlayer.getTeam() == Team.1 else Team2Score)
     if eventPlayer.getTeam() == Team.1:
@@ -437,7 +437,7 @@ rule "Team achieved point":
 #rule "============================STATISTICS TICK VALUES==============================":
 
 
-rule "Dealt Damage":
+rule "Tick Values - Dealt Damage":
     @Event playerDealtDamage
     @Condition createWorkshopSetting(bool, "Enable Stats - Tick Values", "Dealt Damage", false, 0) == true
     if eventWasEnvironment:
@@ -451,7 +451,7 @@ rule "Dealt Damage":
     Log()
 
     
-rule "Took Damage":
+rule "Tick Values - Took Damage":
     @Event playerTookDamage
     @Condition createWorkshopSetting(bool, "Enable Stats - Tick Values", "Took Damage", false, 0) == true
     if eventWasEnvironment:
@@ -465,7 +465,7 @@ rule "Took Damage":
     Log()
 
 
-rule "Dealt Healing":
+rule "Tick Values - Dealt Healing":
     @Event playerDealtHealing
     @Condition createWorkshopSetting(bool, "Enable Stats - Tick Values", "Dealt Healing", false, 0) == true
     V_Nametag = "TV_DealtHealing"
@@ -474,9 +474,9 @@ rule "Dealt Healing":
     Log()
 
 
-rule "Received Healing":
+rule "Tick Values - Received Healing":
     @Event playerReceivedHealing
-    @Condition createWorkshopSetting(bool, "Enable Stats - Tick Values", "Received Healing", false, 0) == true
+    @Condition createWorkshopSetting(bool, "Enable Stats - Tick Values", "Received Healing", false, 0)
     V_Nametag = "TV_ReceivedHealing"
     V_Value = eventHealing
     V_Target = healer
@@ -486,14 +486,270 @@ rule "Received Healing":
 #rule "============================STATISTICS INCREMENTS==============================":
 
 
-rule "Ultimate Percent Increment":
+rule "Increments - Ultimate Percent":
     @Event eachPlayer
     @Condition eventPlayer.getUltCharge() % createWorkshopSetting(int[1:100], "Increments", "Ultimate Increase Increment", 10, 0) == 0
-    @Condition createWorkshopSetting(bool, "Enable Stats", "Ultimate Charge Percent", true, 0) == true
+    @Condition createWorkshopSetting(bool, "Enable Stats", "Ultimate Charge Percent", true, 0)
     V_Nametag = "INC_Charge_Ultimate"
     V_Value = eventPlayer.getUltCharge()
     Log()
 
+
+#rule "============================STATISTICS COMMUNICATION==============================":
+
+
+rule "Communication - Acknowledge":
+    @Event eachPlayer
+    @Condition eventPlayer.isCommunicating(Comms.ACKNOWLEDGE)
+    @Condition createWorkshopSetting(bool, "Enable Stats - Communication", "Acknowledge", true, 0)
+    V_Nametag = "COM_Acknowledge"
+    Log()
+
+rule "Communication - Attacking":
+    @Event eachPlayer
+    @Condition eventPlayer.isCommunicating(Comms.ATTACKING)
+    @Condition createWorkshopSetting(bool, "Enable Stats - Communication", "Attacking", true, 0)
+    V_Nametag = "COM_Attacking"
+    Log()
+
+rule "Communication - Countdown":
+    @Event eachPlayer
+    @Condition eventPlayer.isCommunicating(Comms.COUNTDOWN)
+    @Condition createWorkshopSetting(bool, "Enable Stats - Communication", "Countdown", true, 0)
+    V_Nametag = "COM_Countdown"
+    Log()
+
+rule "Communication - Defending":
+    @Event eachPlayer
+    @Condition eventPlayer.isCommunicating(Comms.DEFENDING)
+    @Condition createWorkshopSetting(bool, "Enable Stats - Communication", "Defending", true, 0)
+    V_Nametag = "COM_Defending"
+    Log()
+
+rule "Communication - Emote Down":
+    @Event eachPlayer
+    @Condition eventPlayer.isCommunicating(Comms.EMOTE_DOWN)
+    @Condition createWorkshopSetting(bool, "Enable Stats - Communication", "Emote Down", true, 0)
+    V_Nametag = "COM_Emote_Down"
+    Log()
+
+rule "Communication - Emote Left":
+    @Event eachPlayer
+    @Condition eventPlayer.isCommunicating(Comms.EMOTE_LEFT)
+    @Condition createWorkshopSetting(bool, "Enable Stats - Communication", "Emote Left", true, 0)
+    V_Nametag = "COM_Emote_Left"
+    Log()
+
+rule "Communication - Emote Right":
+    @Event eachPlayer
+    @Condition eventPlayer.isCommunicating(Comms.EMOTE_RIGHT)
+    @Condition createWorkshopSetting(bool, "Enable Stats - Communication", "Emote Right", true, 0)
+    V_Nametag = "COM_Emote_Right"
+    Log()
+
+rule "Communication - Emote Up":
+    @Event eachPlayer
+    @Condition eventPlayer.isCommunicating(Comms.EMOTE_UP)
+    @Condition createWorkshopSetting(bool, "Enable Stats - Communication", "Emote Up", true, 0)
+    V_Nametag = "COM_Emote_Up"
+    Log()
+
+rule "Communication - Fall back":
+    @Event eachPlayer
+    @Condition eventPlayer.isCommunicating(Comms.FALL_BACK)
+    @Condition createWorkshopSetting(bool, "Enable Stats - Communication", "Fall Back", true, 0)
+    V_Nametag = "COM_Fall_Back"
+    Log()
+
+rule "Communication - Go":
+    @Event eachPlayer
+    @Condition eventPlayer.isCommunicating(Comms.GO)
+    @Condition createWorkshopSetting(bool, "Enable Stats - Communication", "Go", true, 0)
+    V_Nametag = "COM_Go"
+    Log()
+
+rule "Communication - Going in":
+    @Event eachPlayer
+    @Condition eventPlayer.isCommunicating(Comms.GOING_IN)
+    @Condition createWorkshopSetting(bool, "Enable Stats - Communication", "Going in", true, 0)
+    V_Nametag = "COM_Going_In"
+    Log()
+
+rule "Communication - Goodbye":
+    @Event eachPlayer
+    @Condition eventPlayer.isCommunicating(Comms.GOODBYE)
+    @Condition createWorkshopSetting(bool, "Enable Stats - Communication", "Goodbye", true, 0)
+    V_Nametag = "COM_Goodbye"
+    Log()
+
+rule "Communication - Group Up":
+    @Event eachPlayer
+    @Condition eventPlayer.isCommunicating(Comms.GROUP_UP)
+    @Condition createWorkshopSetting(bool, "Enable Stats - Communication", "Group Up", true, 0)
+    V_Nametag = "COM_Group_Up"
+    Log()
+
+rule "Communication - Hello":
+    @Event eachPlayer
+    @Condition eventPlayer.isCommunicating(Comms.HELLO)
+    @Condition createWorkshopSetting(bool, "Enable Stats - Communication", "Hello", true, 0)
+    V_Nametag = "COM_Hello"
+    Log()
+
+rule "Communication - Incoming":
+    @Event eachPlayer
+    @Condition eventPlayer.isCommunicating(Comms.INCOMING)
+    @Condition createWorkshopSetting(bool, "Enable Stats - Communication", "Incoming", true, 0)
+    V_Nametag = "COM_Incoming"
+    Log()
+
+rule "Communication - Need Healing":
+    @Event eachPlayer
+    @Condition eventPlayer.isCommunicating(Comms.NEED_HEALING)
+    @Condition createWorkshopSetting(bool, "Enable Stats - Communication", "Need Healing", true, 0)
+    V_Nametag = "COM_Need_Healing"
+    Log()
+
+rule "Communication - Need Help":
+    @Event eachPlayer
+    @Condition eventPlayer.isCommunicating(Comms.NEED_HELP)
+    @Condition createWorkshopSetting(bool, "Enable Stats - Communication", "Need Help", true, 0)
+    V_Nametag = "COM_Need_Help"
+    Log()
+
+rule "Communication - No":
+    @Event eachPlayer
+    @Condition eventPlayer.isCommunicating(Comms.NO)
+    @Condition createWorkshopSetting(bool, "Enable Stats - Communication", "No", true, 0)
+    V_Nametag = "COM_No"
+    Log()
+
+rule "Communication - On My Way":
+    @Event eachPlayer
+    @Condition eventPlayer.isCommunicating(Comms.ON_MY_WAY)
+    @Condition createWorkshopSetting(bool, "Enable Stats - Communication", "On My Way", true, 0)
+    V_Nametag = "COM_On_My_Way"
+    Log()
+
+rule "Communication - Press The Attack":
+    @Event eachPlayer
+    @Condition eventPlayer.isCommunicating(Comms.PRESS_THE_ATTACK)
+    @Condition createWorkshopSetting(bool, "Enable Stats - Communication", "Press The Attack", true, 0)
+    V_Nametag = "COM_Press_The_Attack"
+    Log()
+
+rule "Communication - Push Forward":
+    @Event eachPlayer
+    @Condition eventPlayer.isCommunicating(Comms.PUSH_FORWARD)
+    @Condition createWorkshopSetting(bool, "Enable Stats - Communication", "Push Forward", true, 0)
+    V_Nametag = "COM_Push_Forward"
+    Log()
+
+rule "Communication - Ready":
+    @Event eachPlayer
+    @Condition eventPlayer.isCommunicating(Comms.READY)
+    @Condition createWorkshopSetting(bool, "Enable Stats - Communication", "Ready", true, 0)
+    V_Nametag = "COM_Ready"
+    Log()
+
+rule "Communication - Sorry":
+    @Event eachPlayer
+    @Condition eventPlayer.isCommunicating(Comms.SORRY)
+    @Condition createWorkshopSetting(bool, "Enable Stats - Communication", "Sorry", true, 0)
+    V_Nametag = "COM_Sorry"
+    Log()
+
+rule "Communication - Spray Down":
+    @Event eachPlayer
+    @Condition eventPlayer.isCommunicating(Comms.SPRAY_DOWN)
+    @Condition createWorkshopSetting(bool, "Enable Stats - Communication", "Spray Down", true, 0)
+    V_Nametag = "COM_Spray_Down"
+    Log()
+
+rule "Communication - Spray Left":
+    @Event eachPlayer
+    @Condition eventPlayer.isCommunicating(Comms.SPRAY_LEFT)
+    @Condition createWorkshopSetting(bool, "Enable Stats - Communication", "Spray Left", true, 0)
+    V_Nametag = "COM_Spray_Left"
+    Log()
+
+rule "Communication - Spray Right":
+    @Event eachPlayer
+    @Condition eventPlayer.isCommunicating(Comms.SPRAY_RIGHT)
+    @Condition createWorkshopSetting(bool, "Enable Stats - Communication", "Spray Right", true, 0)
+    V_Nametag = "COM_Spray_Right"
+    Log()
+
+rule "Communication - Spray Up":
+    @Event eachPlayer
+    @Condition eventPlayer.isCommunicating(Comms.SPRAY_UP)
+    @Condition createWorkshopSetting(bool, "Enable Stats - Communication", "Spray Up", true, 0)
+    V_Nametag = "COM_Spray_Up"
+    Log()
+
+rule "Communication - Thanks":
+    @Event eachPlayer
+    @Condition eventPlayer.isCommunicating(Comms.THANKS)
+    @Condition createWorkshopSetting(bool, "Enable Stats - Communication", "Thanks", true, 0)
+    V_Nametag = "COM_Thanks"
+    Log()
+
+rule "Communication - Ultimate Status":
+    @Event eachPlayer
+    @Condition eventPlayer.isCommunicating(Comms.ULTIMATE_STATUS)
+    @Condition createWorkshopSetting(bool, "Enable Stats - Communication", "Ultimate Status", true, 0)
+    V_Nametag = "COM_Ultimate_Status"
+    Log()
+
+rule "Communication - Voice Line Down":
+    @Event eachPlayer
+    @Condition eventPlayer.isCommunicating(Comms.VOICE_LINE_DOWN)
+    @Condition createWorkshopSetting(bool, "Enable Stats - Communication", "Voice Line Down", true, 0)
+    V_Nametag = "COM_Voice_Line_Down"
+    Log()
+
+rule "Communication - Voice Line Left":
+    @Event eachPlayer
+    @Condition eventPlayer.isCommunicating(Comms.VOICE_LINE_LEFT)
+    @Condition createWorkshopSetting(bool, "Enable Stats - Communication", "Voice Line Left", true, 0)
+    V_Nametag = "COM_Voice_Line_Left"
+    Log()
+
+rule "Communication - Voice Line Right":
+    @Event eachPlayer
+    @Condition eventPlayer.isCommunicating(Comms.VOICE_LINE_RIGHT)
+    @Condition createWorkshopSetting(bool, "Enable Stats - Communication", "Voice Line Right", true, 0)
+    V_Nametag = "COM_Voice_Line_Right"
+    Log()
+
+rule "Communication - Voice Line Up":
+    @Event eachPlayer
+    @Condition eventPlayer.isCommunicating(Comms.VOICE_LINE_UP)
+    @Condition createWorkshopSetting(bool, "Enable Stats - Communication", "Voice Line Up", true, 0)
+    V_Nametag = "COM_Voice_Line_Up"
+    Log()
+
+rule "Communication - With You":
+    @Event eachPlayer
+    @Condition eventPlayer.isCommunicating(Comms.WITH_YOU)
+    @Condition createWorkshopSetting(bool, "Enable Stats - Communication", "With You", true, 0)
+    V_Nametag = "COM_With_You"
+    Log()
+
+rule "Communication - Yes":
+    @Event eachPlayer
+    @Condition eventPlayer.isCommunicating(Comms.YES)
+    @Condition createWorkshopSetting(bool, "Enable Stats - Communication", "Yes", true, 0)
+    V_Nametag = "COM_Yes"
+    Log()
+
+rule "Communication - Your Welcome":
+    @Event eachPlayer
+    @Condition eventPlayer.isCommunicating(Comms.YOURE_WELCOME)
+    @Condition createWorkshopSetting(bool, "Enable Stats - Communication", "Your Welcome", true, 0)
+    V_Nametag = "COM_Your_Welcome"
+    Log()
+    
 
 #rule "============================STATISTICS SUMMARY==============================":
 
