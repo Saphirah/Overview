@@ -20,6 +20,25 @@ def openPlayer(playerID):
     playerName = db.GetPlayerName(playerID)
     wb = WebsiteBuilder("StatTrack - Player - " + playerName)
     wb.components.append(CHeader(playerName, db.GetMapName(match[2]), matchType[0], matchType[1], "/static/Images/Maps_Header/" + db.GetMapImageName(match[2]) + ".jpg"))
+    
+    #Ultimate Statistic
+    wb.components.append(CTitle("Ultimate Usage"))
+    ultimatesUsed = db.Submit("SELECT Count(*) FROM tbl_Events WHERE playerID_F = " + str(playerID) + " AND eventName = 'EV_UsedAbility_Ultimate'").fetchone()[0]
+    ultimatesEarned = db.Submit("SELECT Count(*) FROM tbl_Events WHERE playerID_F = " + str(playerID) + " AND eventName = 'INC_Charge_Ultimate' AND eventValue = '100'").fetchone()[0]
+    wb.components.append(CFieldStat("Ults Used", str(ultimatesUsed) + "/" + str(ultimatesEarned)))
+    wb.components.append(CUltChargeTrack(playerID))
+    matchLength = db.FormatTimeToSeconds(db.GetMatchLength(match[0]))
+    wb.components.append(CFieldStat("Ultimates/Min", str(round(int(ultimatesEarned) / (int(matchLength) / 60), 2)))) # + " <i class='fas fa-caret-up'></i>", "#00FF00"))
+
+    #All stats
+    wb.components.append(CTitle("Statistics"))
+    heroStats = db.Submit("SELECT DISTINCT eventName FROM tbl_Events WHERE eventName Like 'HS%' AND eventValue != '0';").fetchall()
+    heroStats = [item[0] for item in heroStats]
+    for stat in heroStats:
+        Accuracy = db.GetPlayerSummary(playerID, stat)
+        if Accuracy[0] != None and int(Accuracy[1]) != 0:
+            wb.components.append(CFieldStat(Accuracy[0], int(float(Accuracy[1]))))
+    
     return wb.Draw()
 
 #TODO: put webserver into seperate py file
@@ -37,21 +56,24 @@ def openMatch(matchID):
     wb.components.append(CTitle("Team Summary"))
     wb.components.append(CFieldDiagramTeamValues(teamID))
     wb.components.append(CTimeline(teamID))
-
+    wb.components.append(CFieldDiagramTeamDamage(teamID))
     #Player Summary
     #TODO PlayerID's Hardcoded
 
     #Accuracy Round Progress Bar
-    wb.components.append(CTitle("Player Statistics"))
-    Accuracy = db.GetPlayerSummary(97, "HS_Accuracy")
-    wb.components.append(CFieldCircularProgressBar(Accuracy[0], float(Accuracy[1])))
+    wb.components.append(CTitle("Team Statistics"))
+    # Accuracy = db.GetPlayerSummary(97, "HS_Accuracy")
+    # wb.components.append(CFieldCircularProgressBar(Accuracy[0], float(Accuracy[1])))
 
     #All stats
-    heroStats = db.Submit("SELECT DISTINCT eventName FROM tbl_Events WHERE eventName Like 'HS%' AND eventValue != '0';").fetchall()
-    heroStats = [item[0] for item in heroStats]
+    heroStats = db.Submit("SELECT DISTINCT tbl_Events.eventName, eventText FROM tbl_Events INNER JOIN cst_EventName ON tbl_Events.eventName = cst_EventName.eventName WHERE tbl_Events.eventName Like 'HS%';").fetchall()
     for stat in heroStats:
-        Accuracy = db.GetPlayerSummary(97, stat)
-        wb.components.append(CFieldStat(Accuracy[0], int(float(Accuracy[1]))))
+        Accuracy = 0
+        players = db.GetPlayersOfTeam(teamID)
+        for player in players:
+            Accuracy += db.GetPlayerSummary(player[0], stat[0])[1]
+        if Accuracy != 0:
+            wb.components.append(CFieldStat(stat[1], round(Accuracy)))
     return wb.Draw()
 
 @app.route('/')

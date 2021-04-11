@@ -39,6 +39,8 @@ class Database(Singleton):
     def GetMatchLength(self, matchID: int) -> str:
         """Returns the length of a match in the time format 00:00:00"""
         return self.Submit("SELECT Max(gameTime) FROM tbl_Team INNER JOIN (tbl_Events INNER JOIN tbl_Player ON tbl_Events.playerID_F = tbl_Player.playerID) ON tbl_Team.teamID = tbl_Player.teamID_F WHERE tbl_Team.matchID_F = " + str(matchID)).fetchone()[0]
+    def GetMatchOfTeam(self, teamID: int) -> int:
+        return self.Submit("Select matchID_F FROM tbl_Team WHERE teamID = " + str(teamID)).fetchone()[0]
 
     #Players
     def GetPlayerID(self, teamID: int, playerSlot: int, playerName: str = None) -> int:
