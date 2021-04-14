@@ -12,8 +12,8 @@
 }
 
 .frame{
-    //width: 140px;
-    //height: 140px;
+    width: 140px;
+    height: 140px;
     background-color: rgb(50,50,50);
     border-radius: 3px; 
     color: rgba(255,255,255,1);
@@ -173,7 +173,7 @@ g{
         width:    120px;
         height:   120px;
         position: absolute;
-        -webkit-backface-visibility: hidden;
+        backface-visibility: hidden;
         transition: transform 1s;
         border-radius: 50%;
     }

@@ -43,8 +43,10 @@ def openPlayer(playerID):
 
 #TODO: put webserver into seperate py file
 @app.route('/match/<matchID>')
-def openMatch(matchID):
+def openMatch(matchID: int) -> str:
     """Build the match preview page"""
+    matchID, teamID = matchID.split("-")
+    matchID = int(matchID)
     wb = WebsiteBuilder("StatTrack - Match " + str(matchID))
     db = Database()
     match = db.GetMatch(matchID)
@@ -54,16 +56,17 @@ def openMatch(matchID):
     
     #Team Summary
     wb.components.append(CTitle("Team Summary"))
-    wb.components.append(CFieldDiagramTeamValues(teamID))
+    wb.components.append(CFieldDiagramCircleTeamValues(teamID))
     wb.components.append(CTimeline(teamID))
     wb.components.append(CFieldDiagramTeamDamage(teamID))
     #Player Summary
     #TODO PlayerID's Hardcoded
 
     #Accuracy Round Progress Bar
-    wb.components.append(CTitle("Team Statistics"))
-    # Accuracy = db.GetPlayerSummary(97, "HS_Accuracy")
-    # wb.components.append(CFieldCircularProgressBar(Accuracy[0], float(Accuracy[1])))
+    wb.components.append(CTitle("Team Comparison"))
+    wb.components.append(CFieldDiagramCircleTeamComparison(matchID))
+    Accuracy = db.GetPlayerSummary(97, "HS_Accuracy")
+    wb.components.append(CFieldCircularProgressBar(Accuracy[0], float(Accuracy[1])))
 
     #All stats
     heroStats = db.Submit("SELECT DISTINCT tbl_Events.eventName, eventText FROM tbl_Events INNER JOIN cst_EventName ON tbl_Events.eventName = cst_EventName.eventName WHERE tbl_Events.eventName Like 'HS%';").fetchall()
@@ -71,7 +74,7 @@ def openMatch(matchID):
         Accuracy = 0
         players = db.GetPlayersOfTeam(teamID)
         for player in players:
-            Accuracy += db.GetPlayerSummary(player[0], stat[0])[1]
+            Accuracy += db.GetPlayerSummary(player[0], stat[0])[1] or 0
         if Accuracy != 0:
             wb.components.append(CFieldStat(stat[1], round(Accuracy)))
     return wb.Draw()

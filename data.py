@@ -71,7 +71,12 @@ class Database(Singleton):
             return None
         return self.Submit("SELECT eventText, Sum(eventValue) FROM tbl_Events INNER JOIN cst_EventName ON tbl_Events.eventName = cst_EventName.eventName WHERE playerID_F = " + str(playerID) + " AND tbl_Events.eventName = '" + str(eventName) + "'").fetchone()
     def GetAllSummaryTypes(self) -> [(str, str)]:
+        """Returns eventName, eventText"""
         return self.Submit("SELECT * FROM cst_EventName ORDER BY eventText").fetchall()
+
+    #Team Summary Stats
+    def GetTeamSummary(self, teamID: int, eventName: str) -> (str, float):
+        return self.Submit("SELECT eventText, Sum(eventValue) FROM (tbl_Player INNER JOIN tbl_Events ON tbl_Events.playerID_F = tbl_Player.playerID) INNER JOIN cst_EventName ON tbl_Events.eventName = cst_EventName.eventName WHERE teamID_F = " + str(teamID) + " AND tbl_Events.eventName = '" + str(eventName) + "'").fetchone()
 
     #Events
     def GetEventName(self, eventName: str) -> str:
@@ -99,7 +104,9 @@ class Database(Singleton):
     def GetTeam(self, teamID: int) -> (int, int, str, str):
         """Returns teamID, matchID_F, teamScore, teamName"""
         return self.Submit("SELECT * FROM tbl_Team WHERE teamID = " + str(teamID)).fetchone()
-
+    def GetTeamsOfMatch(self, matchID: int) -> [(int, int, str, str)]:
+        """Returns teamID's, matchID_F's, teamScore's, teamName's of all teams"""
+        return self.Submit("SELECT * FROM tbl_Team WHERE matchID_F = " + str(matchID)).fetchall()
     #Maps
     def GetMapName(self, mapID: int) -> str:
         """Returns the readable name of the map"""
@@ -129,6 +136,7 @@ class Database(Singleton):
 
     #Wrapper to send SQL Strings to database
     def Submit(self, SQLString: str) -> sl.Cursor:
+        print(SQLString)
         return self.db.execute(SQLString)
 
     #Write data to database

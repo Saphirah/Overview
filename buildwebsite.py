@@ -113,7 +113,7 @@ class CFieldDiagram(WebsiteComponent):
 
     def Draw(self):
         returnStr = """
-        <div class=\"frame\" style=\"width:740px; height:164px;\">
+        <div class=\"frame\" style=\"width:740px; height:145px;\">
             <svg height="22px" style="width: 100%; padding: 0px; margin-top: 0px;">
                 <g fill="none" text-anchor="middle">
                     """
@@ -125,7 +125,7 @@ class CFieldDiagram(WebsiteComponent):
         returnStr +="""
                 </g>
             </svg>
-            <canvas id=\"""" + str(self.seed) + """\" height="60"></canvas>
+            <canvas id=\"""" + str(self.seed) + """\" height="55"></canvas>
         </div>
         <script>
             var ctx = document.getElementById('""" + str(self.seed) + """').getContext('2d'); 
@@ -208,47 +208,37 @@ class CFieldDiagram(WebsiteComponent):
         """
         return returnStr
 
-class CFieldDiagramTeamValues(WebsiteComponent):
-    """A large field with a circle diagram, displaying the stats for all players of a specific team."""
-    def __init__(self, teamID: int):
-        self.teamID = teamID
-        #TODO: Implement proper ID system, by using random there could be duplicate values
-        self.seed = random.randint(0, 1000000)
+class CFieldDiagramCircle(WebsiteComponent):
+    """A large field with a circle diagram, displaying the stats for all players of a specific team."""       
 
     def Draw(self):
         db = Database()
-        types = db.GetAllSummaryTypes()
         returnStr = "<script>function NewTeamValue_" + str(self.seed) + "(value){var chart = myChart" + str(self.seed) + ";switch(value){"
-        players = db.GetPlayersOfTeam(self.teamID)
-        print(players)
-        for atype in types:
-            returnStr += "case \"" + atype[0] + "\": chart.data.datasets[0].data = ["
-            playerDamage = [db.GetPlayerSummary(item[0], atype[0])[1] for item in players]
-            for value in playerDamage:
+        for dat in self.data:
+            returnStr += "case \"" + dat[0][0] + "\": chart.data.datasets[0].data = ["
+            for value in dat[1]:
                 returnStr += str(value) + ","
             returnStr = returnStr[:-1]
             returnStr += "];chart.data.labels = ["
-            playerDamage = [item[1] for item in players]
-            for value in playerDamage:
-                returnStr += "'" + str(value) + "',"
+            for label in self.labels:
+                returnStr += "'" + str(label) + "',"
             returnStr = returnStr[:-1]
             returnStr += "];break;"
         
         returnStr +="}chart.update()}</script>"
 
-        returnStr += "<div class=\"frame\" style=\"width:340px; height:350px;\"><select id=\"teamcomparison\" onchange=\"NewTeamValue_" + str(self.seed) + "(this.value)\">"
+        returnStr += "<div class=\"frame\" style=\"width:340px; height:350px;\"><select id=\"teamcomparison\" class=\"enlargeField\" onchange=\"NewTeamValue_" + str(self.seed) + "(this.value)\">"
         
-        for atype in types:
-            returnStr += "<option value=\"" + str(atype[0]) + "\">" + str(atype[1]) + "</option>"
+        for atype in self.data:
+            returnStr += "<option value=\"" + str(atype[0][0]) + "\">" + str(atype[0][1]) + "</option>"
         returnStr += "</select>"
         returnStr += """<canvas id=\"""" + str(self.seed) + """\"></canvas></div><script>
             var ctx = document.getElementById('""" + str(self.seed) + """').getContext('2d'); 
             var myChart""" + str(self.seed) + """ = new Chart(ctx, {
                 type: 'doughnut', data: {
                     labels: ["""
-        players = db.GetPlayersOfTeam(self.teamID)
-        for label in players:
-            returnStr += "'" + str(label[1]) + "',"
+        for label in self.labels:
+            returnStr += "'" + str(label) + "',"
         returnStr = returnStr[:-1]
         returnStr +="""],
                     datasets: [{
@@ -269,6 +259,26 @@ class CFieldDiagramTeamValues(WebsiteComponent):
         NewTeamValue_""" + str(self.seed) + """("HS_Accuracy");
             </script>"""
         return returnStr
+
+class CFieldDiagramCircleTeamValues(CFieldDiagramCircle):
+    def __init__(self, teamID: int):
+        db = Database()
+        #TODO: Implement proper ID system, by using random there could be duplicate values
+        self.seed = random.randint(0, 1000000)
+        types = db.GetAllSummaryTypes()
+        labels = db.GetPlayersOfTeam(teamID)
+        self.data = [(types[x],[db.GetPlayerSummary(item[0], types[x][0])[1] for item in labels]) for x in range(0,len(types))]
+        self.labels = [item[1] for item in labels]
+
+class CFieldDiagramCircleTeamComparison(CFieldDiagramCircle):
+    def __init__(self, matchID: int):
+        db = Database()
+        #TODO: Implement proper ID system, by using random there could be duplicate values
+        self.seed = random.randint(0, 1000000)
+        teams = db.GetTeamsOfMatch(matchID)
+        types = db.GetAllSummaryTypes()
+        self.labels = [team[3] for team in teams]
+        self.data = [(types[x],[db.GetTeamSummary(item[0], types[x][0])[1] for item in teams]) for x in range(0,len(types))]
 
 #TODO: Implement more values
 class CTimeline(WebsiteComponent):
@@ -381,9 +391,9 @@ class CFieldDiagramTeamDamage(WebsiteComponent):
                 tfCounter = max(tfCounter - 1, 0)
             prevValue = timestamp[1]
             teamfights.append((timestamp[0], 1 if tfCounter >= 2 else 0))
-        #if teamfights != []:
-        return CFieldDiagram("Teamfight Detect", "#FF0000", teamfights).Draw()
-        #return ""
+        if teamfights != []:
+            return CFieldDiagram("Teamfight Detect", "#FF0000", teamfights).Draw()
+        return ""
 
 
 class WebsiteBuilder:
