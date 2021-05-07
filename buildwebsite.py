@@ -325,13 +325,13 @@ class CTimeline(WebsiteComponent):
             events = self.db.GetEvents("EV_UsedAbility_Ultimate", player[0])
             for ult in events:
                 deathTimePercent = int(self.db.FormatTimeToSeconds(ult[1]) / matchLength * 100)
-                returnStr += "<image x=\"" + str(deathTimePercent) + "%\" y=\"14%\" href=\"/static/Images/Icons/ultimates/" + self.db.GetCharacterOnTimestamp(player[0], ult[1]).lower().replace(" ", "").replace(".", "").replace("ã¶", "ö").replace("ãº","ú")  + ".png\" height=\"35px\" width=\"25px\"/>"
+                returnStr += "<image x=\"" + str(deathTimePercent) + "%\" y=\"14%\" href=\"/static/Images/Icons/ultimates/" + self.db.GetCharacterOnTimestamp(player[0], ult[1]).lower().replace(" ", "").replace(".", "").replace("ã¶", "ö").replace("ãº","ú").replace(":","")  + ".png\" height=\"35px\" width=\"25px\"/>"
             
             #Create Switched Heroes Icons
             events = self.db.GetEvents("EV_SwitchedHero", player[0])
             for ult in events:
                 deathTimePercent = int(self.db.FormatTimeToSeconds(ult[1]) / matchLength * 100)
-                returnStr += "<image x=\"" + str(deathTimePercent) + "%\" y=\"0%\" href=\"/static/Images/Icons/characters/" + ult[4].lower().replace(" ", "").replace(".", "").replace("ã¶", "ö").replace("ãº","ú")  + ".png\" height=\"45px\" width=\"30px\"/>"
+                returnStr += "<image x=\"" + str(deathTimePercent) + "%\" y=\"0%\" href=\"/static/Images/Icons/characters/" + ult[4].lower().replace(" ", "").replace(".", "").replace("ã¶", "ö").replace("ãº","ú").replace(":","")  + ".png\" height=\"45px\" width=\"30px\"/>"
             returnStr +="""
                     </svg>
                 </div>
