@@ -39,6 +39,8 @@ def openPlayer(playerID):
         if Accuracy[0] != None and int(Accuracy[1]) != 0:
             wb.components.append(CFieldStat(Accuracy[0], int(float(Accuracy[1]))))
     
+    wb.components.append(CFieldMapLocations(playerID))
+
     return wb.Draw()
 
 #TODO: put webserver into seperate py file

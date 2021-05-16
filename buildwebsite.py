@@ -280,6 +280,17 @@ class CFieldDiagramCircleTeamComparison(CFieldDiagramCircle):
         self.labels = [team[3] for team in teams]
         self.data = [(types[x],[db.GetTeamSummary(item[0], types[x][0])[1] for item in teams]) for x in range(0,len(types))]
 
+class CFieldMapLocations(WebsiteComponent):
+    def __init__(self, playerID: int):
+        db = Database()
+        self.playerID = playerID
+
+    def Draw(self):
+        db = Database()
+        returnStr = "<div class=\"frame\" style=\"width:340px; height:350px;\"></div>"
+        return returnStr
+
+
 #TODO: Implement more values
 class CTimeline(WebsiteComponent):
     """A timeline, showing events such as kills, ultimates etc..."""

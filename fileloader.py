@@ -69,11 +69,16 @@ class FileLoader():
     def ResetDatabase(self):
         """Deletes every non-permanent entry in the Database. Use with caution"""
         self.db.Submit("DELETE FROM tbl_Events")
+        self.db.Submit("DELETE FROM tbl_Events_Tmp")
         self.db.Submit("DELETE FROM tbl_Match")
         self.db.Submit("DELETE FROM tbl_Player")
         self.db.Submit("DELETE FROM tbl_Team")
+        self.db.Submit("DELETE FROM tbl_Player_Statistic_Total")
+        self.db.Submit("DELETE FROM tbl_Player_Statistic_Hero")
+        self.db.Submit("DELETE FROM tbl_Player_Position")
+        self.db.Submit("DELETE FROM tbl_Player_Communication")
         self.db.Commit()
 
-#FileLoader().ResetDatabase()
-FileLoader().LoadFile()
+FileLoader().ResetDatabase()
+#FileLoader().LoadFile()
 
