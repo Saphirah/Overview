@@ -25,7 +25,7 @@
         <div id="dragAndDropField" class='navigation enlargeField' style='background-image: linear-gradient(#2c3e5088, #2c3e5044); width: 50%; margin: 0 auto;' onclick="document.getElementById('file-input').click();"  ondrop="dropHandler(event);">
             <div>
                 <i class="fas fa-upload" style="font-size: 60;"></i>
-                <h1>Drag and drop file here!</h1>
+                <h1>Drag and drop files here!</h1>
                 <h5 style="font-family: 'montseratLight';">
                     Pull in your match log files
                 </h5>

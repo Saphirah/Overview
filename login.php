@@ -14,51 +14,13 @@
 
     <body>
 
-        <!-- Header -->
-        <div class='navigation' style='background-image: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), url(/static/Images/Maps_Header/KingsRow.jpg);'>
-            <div>
-                <h1>Overview</h0>
-                <h5 style="font-family: 'montseratLight';">
-                    Overwatch Stat Analyzing Tool<br>
-                </h5>
-            </div>
-        </div>
-        <div class="loginField" id="loginfield">
-            <h1>LOGIN</h1>
-            <form name="login" action="login.php" method="POST">
-                <label for="username">Username:</label><br>
-                <input class="loginInput" type="text" value="" id="username" name="username" /><br>
-                <label for="password">Password:</label><br>
-                <input class="loginInput" type="password" value="" id="password" name="password" /><br>
-                <input class="loginButton enlargeField" type="submit" value="Login">
-                <input id="s2" type="checkbox" class="switch" checked style="margin:15px; margin-right: 5px;">
-                <label for="s2" style="margin-top:15px;">Stay Logged in</label>
-            </form>
-        </div>
-
-        <div class="loginField" id="registerField">
-            <h1>Register</h1>
-            <form name="register" action="?register=1" method="POST">
-                <label for="registerUsername">Username:</label><br>
-                <input class="loginInput" type="text" value="" id="registerUsername" name="registerUsername" /><br>
-                <label for="registerEmail">Email:</label><br>
-                <input class="loginInput" type="email" value="" id="registerEmail" name="registerEmail" /><br>
-                <label for="registerPassword">Password:</label><br>
-                <input class="loginInput" type="password" value="" id="registerPassword" name="registerPassword"/><br>
-                <input class="loginButton enlargeField" type="submit" value="Register">
-            </form>
-        </div>
-
-        <?php
+    <?php
             session_start();
             if(isset($_SESSION['userid'])){
                 unset($_SESSION['userid']);
                 unset($_SESSION['userName']);
                 echo("<script>parent.location.reload();</script>");
-            }
-
-            //Try to login
-            if(isset($_POST['username']) && isset($_POST['password'])){
+            }elseif(isset($_POST['username']) && isset($_POST['password'])){
                 $username = $_POST['username'];
                 $password = $_POST['password'];
                 if(strlen($username) == 0){
@@ -79,9 +41,7 @@
                 } else {
                     echo("<br>Login failed. Please check your credentials!");
                 }
-            }
-
-            if(isset($_POST['registerUsername']) && isset($_POST['registerEmail']) && isset($_POST['registerPassword'])) {
+            }elseif(isset($_POST['registerUsername']) && isset($_POST['registerEmail']) && isset($_POST['registerPassword'])) {
                 $username = $_POST['registerUsername'];
                 $email = $_POST['registerEmail'];
                 $password = $_POST['registerPassword'];
@@ -113,14 +73,57 @@
             
                 $password_hash = password_hash($password, PASSWORD_DEFAULT);
                 $result = $db->query("INSERT INTO wb_Account(accountEmail, accountPassword, accountName) VALUES ('".$email."', '".$password_hash."', '".$username."')");
+                
 
                 if($result) {        
-                    echo("<script>window.location.replace(\"http://example.com/\")</script>");
+                    $user = $db->query("SELECT * FROM wb_Account WHERE accountEmail = '" . $email . "' AND accountName = '" . $username . "'")->fetch();
+                    echo("<script>parent.location.reload();</script>");
                     $showFormular = false;
                 } else {
                     echo '<br>Saving your credentials failed!';
                 }
+            }else{ 
+        ?>
+        <!-- Header -->
+        <div class='navigation' style='background-image: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), url(/static/Images/Maps_Header/KingsRow.jpg);'>
+                    <div>
+                        <h1>Overview</h0>
+                        <h5 style="font-family: 'montseratLight';">
+                            Overwatch Stat Analyzing Tool<br>
+                        </h5>
+                    </div>
+                </div>
+                <!-- Login Field -->
+                <div class="loginField" id="loginfield">
+                    <h1>LOGIN</h1>
+                    <form name="login" action="login.php" method="POST">
+                        <label for="username">Username:</label><br>
+                        <input class="loginInput" type="text" value="" id="username" name="username" /><br>
+                        <label for="password">Password:</label><br>
+                        <input class="loginInput" type="password" value="" id="password" name="password" /><br>
+                        <input class="loginButton enlargeField" type="submit" value="Login">
+                        <input id="s2" type="checkbox" class="switch" checked style="margin:15px; margin-right: 5px;">
+                        <label for="s2" style="margin-top:15px;">Stay Logged in</label>
+                    </form>
+                </div>
+                <!-- Register Field -->
+                <div class="loginField" id="registerField">
+                    <h1>Register</h1>
+                    <form name="register" action="?register=1" method="POST">
+                        <label for="registerUsername">Username:</label><br>
+                        <input class="loginInput" type="text" value="" id="registerUsername" name="registerUsername" /><br>
+                        <label for="registerEmail">Email:</label><br>
+                        <input class="loginInput" type="email" value="" id="registerEmail" name="registerEmail" /><br>
+                        <label for="registerPassword">Password:</label><br>
+                        <input class="loginInput" type="password" value="" id="registerPassword" name="registerPassword"/><br>
+                        <input class="loginButton enlargeField" type="submit" value="Register">
+                    </form>
+                </div>
+            </body>
+        </html>
+        <?php
             }
         ?>
-    </body>
-</html>
+
+
+        
