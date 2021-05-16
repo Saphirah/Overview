@@ -3,18 +3,16 @@ settings {
         "description": "Seita Scrim lobby v1.23 -- Including Stat Tracking -- By Saphirah"
     },
     "gamemodes": {
-        "control": {
-            "enabledMaps": [
-                "lijiangTower"
-            ],
-            "scoreToWin": 3
-        },
+        "control": {"scoreToWin": 3},
+        "assault": {},
+        "escort": {},
+        "hybrid": {},
         "general": {
             "enableCompetitiveRules": true,
             "gamemodeStartTrigger": "immediately",
             "enableKillCam": false,
             "roleLimit": "2OfEachRolePerTeam",
-            "enableSkins": true
+            "enableSkins": false
         }
     },
     "workshop": {
@@ -34,7 +32,6 @@ globalvar TimeCooldown 3
 globalvar BreakCooldown 4
 globalvar T1ReadyCD 5
 globalvar T2ReadyCD 6
-globalvar Index 7
 globalvar RoundCounter 8
 globalvar Team1Score 9
 globalvar Team2Score 10
@@ -42,19 +39,21 @@ globalvar V_Nametag 11
 globalvar V_Value 12
 globalvar V_Target 13
 globalvar S_Debug 14
-
+globalvar DC_StoreVariablesTeam1 15
+globalvar DC_StoreVariablesTeam2 16
+globalvar DC_Temp 17
+globalvar Index 20
+globalvar Index2 21
 
 #Player variables
 playervar HeroList 0
 playervar CurrentHero 1
 playervar PlayedHeroes 2
 
-
 #Subroutine names
 subroutine Log 0
 subroutine Summary 1
 subroutine ResetVariables 2
-
 
 rule "Seita Scrim lobby":
 
@@ -63,15 +62,12 @@ rule "Seita Scrim lobby":
     hudHeader(getPlayers(Team.2) if Team1Ready else null, "Enemy team is ready", HudPosition.TOP, 20, Color.RED, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.NEVER)
     hudHeader(getPlayers(Team.2) if Team2Ready else null, "Your team is ready", HudPosition.TOP, 20, Color.GREEN, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.NEVER)
     hudHeader(getPlayers(Team.1) if Team2Ready else null, "Enemy team is ready", HudPosition.TOP, 20, Color.RED, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.NEVER)
-    
+
     #Help Text
     hudSubtext(null if isGameInProgress() else getAllPlayers(), " ", HudPosition.RIGHT, 20, Color.WHITE, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.NEVER)
     hudSubtext(null if isGameInProgress() else getAllPlayers(), " ", HudPosition.RIGHT, 21, Color.WHITE, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.NEVER)
-    hudSubheader(null if isGameInProgress() else getAllPlayers(), "Press {0} + {1}: Ready (or cancel Ready)".format(buttonString(Button.INTERACT), buttonString(Button.CROUCH)), HudPosition.RIGHT, 22, Color.AQUA, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.NEVER)
-    hudSubheader(null if isGameInProgress() else getAllPlayers(), "Press {0}: adds extra 20 seconds to setup".format(buttonString(Button.ULTIMATE)), HudPosition.RIGHT, 23, Color.WHITE, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.NEVER)
-    hudSubheader(null if isGameInProgress() else getAllPlayers(), "Press {0} + {1}: Adds 5 min break timer".format(buttonString(Button.INTERACT), buttonString(Button.ULTIMATE)), HudPosition.RIGHT, 24, Color.WHITE, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.NEVER)
-    hudSubheader(null if isGameInProgress() else getAllPlayers(), "Press {0}: Teleport (works only in Defense, in spawn)".format(buttonString(Button.MELEE)), HudPosition.RIGHT, 25, Color.ORANGE, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.NEVER)
-    hudSubheader(null if isGameInProgress() else getAllPlayers(), "Hold {0}: Change hero (works only in Defense)".format(buttonString(Button.RELOAD)), HudPosition.RIGHT, 26, Color.YELLOW, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.NEVER)
+    hudSubheader(null if isGameInProgress() else getAllPlayers(), "[{0}]: Add 20 seconds to timer".format(buttonString(Button.ULTIMATE)), HudPosition.RIGHT, 23, Color.WHITE, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.NEVER)
+    hudSubheader(null if isGameInProgress() else getAllPlayers(), "[{0} + {1}]: Add 5 min break timer".format(buttonString(Button.INTERACT), buttonString(Button.ULTIMATE)), HudPosition.RIGHT, 24, Color.WHITE, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.NEVER)
     
     #Spectator Help Text
     hudSubtext(null, " ", HudPosition.RIGHT, 27, Color.WHITE, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.ALWAYS)
@@ -83,7 +79,6 @@ rule "Seita Scrim lobby":
     for Index in range(0,6):
         hudSubtext(null, l"{0} {1}".format(heroIcon(getPlayersInSlot(evalOnce(Index), Team.1).getCurrentHero()), l"{0} - {1} - {2}".format(round(getPlayersInSlot(evalOnce(Index), Team.1).getStatistic(Stat.DAMAGE_DEALT)), round(getPlayersInSlot(evalOnce(Index), Team.1).getStatistic(Stat.HEALING_DEALT)) if getPlayersInSlot(evalOnce(Index), Team.1).getCurrentHero() in getSupportHeroes() == true else round(getPlayersInSlot(evalOnce(Index), Team.1).getStatistic(Stat.DAMAGE_TAKEN)), l"{0} - {1}".format(getPlayersInSlot(evalOnce(Index), Team.1).getStatistic(Stat.ULTIMATES_USED), getPlayersInSlot(evalOnce(Index), Team.1).getStatistic(Stat.DEATHS)))), HudPosition.LEFT, 1, Color.BLUE, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.ALWAYS)
         hudSubtext(null, l"{0} {1}".format(heroIcon(getPlayersInSlot(evalOnce(Index), Team.2).getCurrentHero()), l"{0} - {1} - {2}".format(round(getPlayersInSlot(evalOnce(Index), Team.2).getStatistic(Stat.DAMAGE_DEALT)), round(getPlayersInSlot(evalOnce(Index), Team.2).getStatistic(Stat.HEALING_DEALT)) if getPlayersInSlot(evalOnce(Index), Team.2).getCurrentHero() in getSupportHeroes() == true else round(getPlayersInSlot(evalOnce(Index), Team.2).getStatistic(Stat.DAMAGE_TAKEN)), l"{0} - {1}".format(getPlayersInSlot(evalOnce(Index), Team.2).getStatistic(Stat.ULTIMATES_USED), getPlayersInSlot(evalOnce(Index), Team.2).getStatistic(Stat.DEATHS)))), HudPosition.RIGHT, 1, Color.RED, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.ALWAYS)
-    
     #Save Gamemode
     switch(getCurrentGamemode()):
         case Gamemode.ESCORT:
@@ -99,6 +94,20 @@ rule "Seita Scrim lobby":
             GameMode = 3
             RoundCounter = -1
             break
+    
+    DC_StoreVariablesTeam1 = [[],[],[],[],[],[]]
+    DC_StoreVariablesTeam2 = [[],[],[],[],[],[]]
+
+
+rule "Add Defense Teleport HUD":
+    @Event eachPlayer
+    @Condition isTeamOnDefense(eventPlayer.getTeam()) or isTeamOnOffense(eventPlayer.getTeam())
+    hudSubheader(eventPlayer if not(isGameInProgress()) and isTeamOnDefense(eventPlayer.getTeam()) and eventPlayer.isInSpawnRoom() else null, "Press {0}: Teleport".format(buttonString(Button.MELEE)), HudPosition.RIGHT, 25, Color.ORANGE, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.NEVER)
+    hudSubheader(eventPlayer if not(isGameInProgress()) and isTeamOnDefense(eventPlayer.getTeam()) else null, "Hold {0}: Change hero".format(buttonString(Button.RELOAD)), HudPosition.RIGHT, 26, Color.YELLOW, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.NEVER)
+    if(eventPlayer.getTeam() == Team.1):
+        hudSubheader(null if isGameInProgress() else eventPlayer, "[{0} + {1}]: Cancel Ready".format(buttonString(Button.INTERACT), buttonString(Button.CROUCH)) if Team1Ready else "[{0} + {1}]: Ready".format(buttonString(Button.INTERACT), buttonString(Button.CROUCH)), HudPosition.RIGHT, 22, Color.AQUA, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.NEVER)
+    else:
+        hudSubheader(null if isGameInProgress() else eventPlayer, "[{0} + {1}]: Cancel Ready".format(buttonString(Button.INTERACT), buttonString(Button.CROUCH)) if Team2Ready else "[{0} + {1}]: Ready".format(buttonString(Button.INTERACT), buttonString(Button.CROUCH)), HudPosition.RIGHT, 22, Color.AQUA, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.NEVER)
 
 rule "Remove Assembling Heroes":
     @Condition isAssemblingHeroes() == true
@@ -136,11 +145,12 @@ rule "Ultimate: +20s match time while in setup":
     @Condition isGameInProgress() == false
     @Condition eventPlayer.isHoldingButton(Button.ULTIMATE) == true
     @Condition eventPlayer.isHoldingButton(Button.INTERACT) == false
-    @Condition TimeCooldown == 0
-    TimeCooldown = 2
     setMatchTime(getMatchTime() + 20)
-    chase(TimeCooldown, 0, rate=1, ChaseReeval.DESTINATION_AND_RATE)
     smallMessage(getAllPlayers(), l"{0} {1}".format(eventPlayer, "added 20 seconds"))
+    if(eventPlayer.getTeam() == Team.1):
+        Team1Ready = false
+    else:
+        Team2Ready = false
 
 
 rule "Interact + Ultimate: +5min match time while in setup":
@@ -148,13 +158,12 @@ rule "Interact + Ultimate: +5min match time while in setup":
     @Condition isGameInProgress() == false
     @Condition eventPlayer.isHoldingButton(Button.ULTIMATE) == true
     @Condition eventPlayer.isHoldingButton(Button.INTERACT) == true
-    @Condition BreakCooldown == 0
-    BreakCooldown = 10
-    TimeCooldown = 10
     setMatchTime(getMatchTime() + 300)
-    chase(BreakCooldown, 0, rate=1, ChaseReeval.DESTINATION_AND_RATE)
-    chase(TimeCooldown, 0, rate=1, ChaseReeval.DESTINATION_AND_RATE)
     smallMessage(getAllPlayers(), l"{0} {1}".format(eventPlayer, "added 5 mins"))
+    if(eventPlayer.getTeam() == Team.1):
+        Team1Ready = false
+    else:
+        Team2Ready = false
 
 
 rule "Crouch + Interact: Team 1 Ready":
@@ -172,6 +181,7 @@ rule "Crouch + Interact: Team 1 Ready":
         smallMessage(getAllPlayers(), l"{0} {1}".format(eventPlayer, "readied their team"))
     else:
         smallMessage(getAllPlayers(), l"{0} {1}".format(eventPlayer, "unreadied their team"))
+        setMatchTime(max(60, getMatchTime()))
 
 
 rule "Crouch + Interact: Team 2 Ready":
@@ -189,6 +199,7 @@ rule "Crouch + Interact: Team 2 Ready":
         smallMessage(getAllPlayers(), l"{0} {1}".format(eventPlayer, "readied their team"))
     else:
         smallMessage(getAllPlayers(), l"{0} {1}".format(eventPlayer, "unreadied their team"))
+        setMatchTime(max(60, getMatchTime()))
 
 
 #rule "Setting Score after failed attacks":
@@ -200,7 +211,7 @@ rule "Round Counter":
 
 
 rule "Set Team Score: Escort & Hybrid":
-    @Condition RoundCounter > 0
+    @Condition RoundCounter > 1
     switch(GameMode):
         case 1:
             #Escort & Hybrid
@@ -211,9 +222,34 @@ rule "Set Team Score: Escort & Hybrid":
             setTeamScore(Team.2, 2)
             break
 
-/*
-rule "Teleports for Defense team":
-*/
+rule "Reconnect Player":
+    @Event playerJoined
+    if eventPlayer.getTeam() == Team.1:
+        DC_Temp = DC_StoreVariablesTeam1[eventPlayer.getSlot()]
+    else:
+        DC_Temp = DC_StoreVariablesTeam1[eventPlayer.getSlot()]
+    eventPlayer.startForcingHero(DC_Temp[4])
+    eventPlayer.setHealth(DC_Temp[0])
+    eventPlayer.setUltCharge(DC_Temp[1])
+    eventPlayer.teleport(DC_Temp[2])
+    eventPlayer.setFacing(DC_Temp[3], Relativity.TO_WORLD)
+    if DC_Temp[0] <= 0:
+        kill(eventPlayer, null)
+    eventPlayer.stopForcingCurrentHero()
+
+rule "Store Team Values for Reconnect":
+    @Event eachPlayer
+    @Condition eventPlayer.hasSpawned()
+    if eventPlayer.getTeam() == Team.1:
+        DC_StoreVariablesTeam1[eventPlayer.getSlot()] = [eventPlayer.getHealth(), eventPlayer.getUltCharge(), eventPlayer.getPosition(), eventPlayer.getFacingDirection(), eventPlayer.getCurrentHero()]
+    else:
+        DC_StoreVariablesTeam2[eventPlayer.getSlot()] = [eventPlayer.getHealth(), eventPlayer.getUltCharge(), eventPlayer.getPosition(), eventPlayer.getFacingDirection(), eventPlayer.getCurrentHero()]
+    wait(2, Wait.ABORT_WHEN_FALSE)
+    goto RULE_START
+
+
+#rule "Teleports for Defense team":
+
 
 rule "Hold Reload: Change hero for Defense team":
     @Event eachPlayer
@@ -240,21 +276,26 @@ rule "Press Melee for all of the maps":
     @Condition eventPlayer.isHoldingButton(Button.MELEE) == true
     switch (getCurrentMap()):
         case Map.BLIZZ_WORLD:
+        case Map.BLIZZ_WORLD_WINTER:
             eventPlayer.teleport(vect(-8.171, 3.824, 65.861))
             break
         case Map.EICHENWALDE:
+        case Map.EICHENWALDE_HALLOWEEN:
             eventPlayer.teleport(vect(13.226, 12.981, -83.655))
             break
         case Map.HOLLYWOOD:
+        case Map.HOLLYWOOD_HALLOWEEN:
             eventPlayer.teleport(vect(-19.248, 8.007, -9.802))
             break
         case Map.KINGS_ROW:
+        case Map.KINGS_ROW_WINTER:
             eventPlayer.teleport(vect(-37.185, 10.346, -15.058))
             break
         case Map.NUMBANI:
             eventPlayer.teleport(vect(93.044, 5.53, -22.723))
             break
         case Map.HANAMURA:
+        case Map.HANAMURA_WINTER:
             eventPlayer.teleport(vect(13.079, 1.346, -24.267))
             break
         case Map.HORIZON_LUNAR_COLONY:
@@ -294,11 +335,9 @@ rule "Press Melee for all of the maps":
 
 rule "Setup":
     S_Debug = createWorkshopSetting(bool, "DEBUG", "Enable Debug Mode", false, 0)
-    V_Nametag = "EV_LoadMap"
-    V_Value = getCurrentMap()
+    V_Nametag = ""
+    V_Value = ""
     V_Target = ""
-    Log()
-
 
 rule "Setup EventPlayer":
     @Event eachPlayer
@@ -316,6 +355,12 @@ rule "DEBUG: UI":
     @Condition S_Debug == true
     hudText(getAllPlayers(), "Server Load: {0}".format(updateEveryTick(getServerLoad())), "Server Load Average: {0}".format(updateEveryTick(getAverageServerLoad())), "Server Load Peak: {0}".format(getPeakServerLoad()), HudPosition.LEFT, 0, Color.WHITE, Color.WHITE, Color.WHITE, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.DEFAULT)
 
+rule "DEBUG: Shorten Match Time":
+    @Condition S_Debug == true
+    @Condition isGameInProgress()
+    @Condition createWorkshopSetting(bool, "DEBUG", "Shorten Match Time", false, 0)
+    setMatchTime(20)
+
 
 #rule "==============================STATISTICS================================"
 
@@ -328,6 +373,34 @@ def Log():
     V_Value = l""
     V_Target = l""
 
+rule "Events - Map Start":
+    @Event eachPlayer
+    @Slot 0
+    @Team 1
+    V_Nametag = "EV_LoadMap"
+    V_Value = getCurrentMap()
+    V_Target = ""
+    Log()
+
+rule "Events - Round Started":
+    @Event eachPlayer
+    @Slot 0
+    @Team 1
+    @Condition isGameInProgress()
+    V_Nametag = "EV_RoundStarted"
+    V_Value = getMatchRound()
+    V_Target = ""
+    Log()
+
+rule "Events - Round Ended":
+    @Event eachPlayer
+    @Slot 0
+    @Team 1
+    @Condition not(isGameInProgress())
+    V_Nametag = "EV_RoundEnded"
+    V_Value = getMatchRound()
+    V_Target = ""
+    Log()
 
 rule "Events - Switched Hero":
     @Event eachPlayer
@@ -350,12 +423,12 @@ rule "Events - Player Joined Match":
     Log()
 
 
-rule "Events - Player Left Match":
-    @Event playerLeft
-    @Condition createWorkshopSetting(bool, "Enable Stats", "Player left match", true, 0) == true
-    V_Nametag = "EV_PlayerLeftMatch"
-    V_Value = eventPlayer
-    Log()
+#rule "Events - Player Left Match":
+#    @Event playerLeft
+#    @Condition createWorkshopSetting(bool, "Enable Stats", "Player left match", true, 0) == true
+#    V_Nametag = "EV_PlayerLeftMatch"
+#    V_Value = eventPlayer
+#    Log()
 
 
 rule "Events - Player Died":
@@ -371,6 +444,7 @@ rule "Events - Ability 1":
     @Condition eventPlayer.isUsingAbility1() == true
     @Condition createWorkshopSetting(bool, "Enable Stats", "Used Ability 1", true, 0) == true
     V_Nametag = "EV_UsedAbility_1"
+    V_Value = eventPlayer.getCurrentHero()
     Log()
 
 
@@ -379,6 +453,7 @@ rule "Events - Ability 2":
     @Condition eventPlayer.isUsingAbility2() == true
     @Condition createWorkshopSetting(bool, "Enable Stats", "Used Ability 2", true, 0) == true
     V_Nametag = "EV_UsedAbility_2"
+    V_Value = eventPlayer.getCurrentHero()
     Log()
 
 
@@ -387,6 +462,7 @@ rule "Events - Ability Ultimate":
     @Condition eventPlayer.isUsingUltimate() == true
     @Condition createWorkshopSetting(bool, "Enable Stats", "Used Ultimate", true, 0) == true
     V_Nametag = "EV_UsedAbility_Ultimate"
+    V_Value = eventPlayer.getCurrentHero()
     Log()
 
 rule "Events - Final Blows":
@@ -423,6 +499,7 @@ rule "Events - Dealt Knockback":
 
 rule "Events - Team achieved point":
     @Event eachPlayer
+    @Slot 0
     @Condition teamScore(eventPlayer.getTeam()) > (Team1Score if eventPlayer.getTeam() == Team.1 else Team2Score)
     if eventPlayer.getTeam() == Team.1:
         Team1Score = teamScore(eventPlayer.getTeam())
@@ -434,12 +511,34 @@ rule "Events - Team achieved point":
     Log()
 
 
+#rule "============================STATISTICS TIMERS==============================":
+
+rule "Timer - Player Position":
+    @Event eachPlayer
+    @Condition createWorkshopSetting(bool, "Enable Stats", "Player Positions", true, 0)
+    @Condition eventPlayer.hasSpawned()
+    while(true):
+        wait(createWorkshopSetting(float[0.5:10], "Enable Stats - Timers", "Player Position (sec/log)", 2, 0), Wait.ABORT_WHEN_FALSE)
+        V_Nametag = "EV_PlayerPosition"
+        V_Value = eventPlayer.getPosition()
+        Log()
+
+rule "Timer - Ultimate Percent":
+    @Event eachPlayer
+    @Condition createWorkshopSetting(bool, "Enable Stats", "Ultimate Charge Percent", true, 0)
+    @Condition eventPlayer.hasSpawned()
+    while(true):
+        wait(createWorkshopSetting(float[0.5:10], "Enable Stats - Timers", "Ultimate Percentage (sec/log)", 5, 0), Wait.ABORT_WHEN_FALSE)
+        V_Nametag = "EV_Charge_Ultimate"
+        V_Value = eventPlayer.getUltCharge()
+        Log()
+
 #rule "============================STATISTICS TICK VALUES==============================":
 
 
 rule "Tick Values - Dealt Damage":
     @Event playerDealtDamage
-    @Condition createWorkshopSetting(bool, "Enable Stats - Tick Values", "Dealt Damage", false, 0) == true
+    @Condition createWorkshopSetting(bool, "Enable Stats - Tick Values (Performance Warning)", "Dealt Damage", false, 0)
     if eventWasEnvironment:
         V_Nametag = "TV_DealtDamage_Environmental"
     elif eventWasCriticalHit:
@@ -449,11 +548,10 @@ rule "Tick Values - Dealt Damage":
     V_Value = eventDamage
     V_Target = victim
     Log()
-
     
 rule "Tick Values - Took Damage":
     @Event playerTookDamage
-    @Condition createWorkshopSetting(bool, "Enable Stats - Tick Values", "Took Damage", false, 0) == true
+    @Condition createWorkshopSetting(bool, "Enable Stats - Tick Values (Performance Warning)", "Took Damage", false, 0)
     if eventWasEnvironment:
         V_Nametag = "TV_TookDamage_Environmental"
     elif eventWasCriticalHit:
@@ -467,7 +565,7 @@ rule "Tick Values - Took Damage":
 
 rule "Tick Values - Dealt Healing":
     @Event playerDealtHealing
-    @Condition createWorkshopSetting(bool, "Enable Stats - Tick Values", "Dealt Healing", false, 0) == true
+    @Condition createWorkshopSetting(bool, "Enable Stats - Tick Values (Performance Warning)", "Dealt Healing", false, 0)
     V_Nametag = "TV_DealtHealing"
     V_Value = eventHealing
     V_Target = healee
@@ -476,23 +574,12 @@ rule "Tick Values - Dealt Healing":
 
 rule "Tick Values - Received Healing":
     @Event playerReceivedHealing
-    @Condition createWorkshopSetting(bool, "Enable Stats - Tick Values", "Received Healing", false, 0)
+    @Condition createWorkshopSetting(bool, "Enable Stats - Tick Values (Performance Warning)", "Received Healing", false, 0)
     V_Nametag = "TV_ReceivedHealing"
     V_Value = eventHealing
     V_Target = healer
     Log()
 
-
-#rule "============================STATISTICS INCREMENTS==============================":
-
-
-rule "Increments - Ultimate Percent":
-    @Event eachPlayer
-    @Condition eventPlayer.getUltCharge() % createWorkshopSetting(int[1:100], "Increments", "Ultimate Increase Increment", 10, 0) == 0
-    @Condition createWorkshopSetting(bool, "Enable Stats", "Ultimate Charge Percent", true, 0)
-    V_Nametag = "INC_Charge_Ultimate"
-    V_Value = eventPlayer.getUltCharge()
-    Log()
 
 
 #rule "============================STATISTICS COMMUNICATION==============================":
@@ -791,15 +878,16 @@ def Summary():
             printLog(", {0} , \"HS_Ultimates_Earned\" , \"{1}\" , \"{2}\"".format("\"{0}\" , \"{1}\" , \"{2}\"".format(eventPlayer.getTeam(), eventPlayer.getSlot(), eventPlayer), eventPlayer.getHeroStatistic(eventPlayer.PlayedHeroes[Index], HeroStat.ULTIMATES_EARNED), eventPlayer.PlayedHeroes[Index]))
             printLog(", {0} , \"HS_Ultimates_Used\" , \"{1}\" , \"{2}\"".format("\"{0}\" , \"{1}\" , \"{2}\"".format(eventPlayer.getTeam(), eventPlayer.getSlot(), eventPlayer), eventPlayer.getHeroStatistic(eventPlayer.PlayedHeroes[Index], HeroStat.ULTIMATES_USED), eventPlayer.PlayedHeroes[Index]))
             printLog(", {0} , \"HS_Accuracy\" , \"{1}\" , \"{2}\"".format("\"{0}\" , \"{1}\" , \"{2}\"".format(eventPlayer.getTeam(), eventPlayer.getSlot(), eventPlayer), eventPlayer.getHeroStatistic(eventPlayer.PlayedHeroes[Index], HeroStat.WEAPON_ACCURACY), eventPlayer.PlayedHeroes[Index]))
+            wait(0)
         eventPlayer.PlayedHeroes = []
         printLog(", {0} , \"TS_Damage_All\" , \"{1}\" , \"{2}\"".format("\"{0}\" , \"{1}\" , \"{2}\"".format(eventPlayer.getTeam(), eventPlayer.getSlot(), eventPlayer), eventPlayer.getStatistic(Stat.DAMAGE_DEALT), null))
         printLog(", {0} , \"TS_Damage_Barrier\" , \"{1}\" , \"{2}\"".format("\"{0}\" , \"{1}\" , \"{2}\"".format(eventPlayer.getTeam(), eventPlayer.getSlot(), eventPlayer), eventPlayer.getStatistic(Stat.BARRIER_DAMAGE_DEALT), null))
         printLog(", {0} , \"TS_Damage_Blocked\" , \"{1}\" , \"{2}\"".format("\"{0}\" , \"{1}\" , \"{2}\"".format(eventPlayer.getTeam(), eventPlayer.getSlot(), eventPlayer), eventPlayer.getStatistic(Stat.DAMAGE_BLOCKED), null))
         printLog(", {0} , \"TS_Damage_Taken\" , \"{1}\" , \"{2}\"".format("\"{0}\" , \"{1}\" , \"{2}\"".format(eventPlayer.getTeam(), eventPlayer.getSlot(), eventPlayer), eventPlayer.getStatistic(Stat.DAMAGE_TAKEN), null))
-        printLog(", {0} , \"TS_DeatTS_All\" , \"{1}\" , \"{2}\"".format("\"{0}\" , \"{1}\" , \"{2}\"".format(eventPlayer.getTeam(), eventPlayer.getSlot(), eventPlayer), eventPlayer.getStatistic(Stat.DEATHS), null))
+        printLog(", {0} , \"TS_Deaths_All\" , \"{1}\" , \"{2}\"".format("\"{0}\" , \"{1}\" , \"{2}\"".format(eventPlayer.getTeam(), eventPlayer.getSlot(), eventPlayer), eventPlayer.getStatistic(Stat.DEATHS), null))
         printLog(", {0} , \"TS_Assists_Defensive\" , \"{1}\" , \"{2}\"".format("\"{0}\" , \"{1}\" , \"{2}\"".format(eventPlayer.getTeam(), eventPlayer.getSlot(), eventPlayer), eventPlayer.getStatistic(Stat.DEFENSIVE_ASSISTS), null))
         printLog(", {0} , \"TS_Eliminations\" , \"{1}\" , \"{2}\"".format("\"{0}\" , \"{1}\" , \"{2}\"".format(eventPlayer.getTeam(), eventPlayer.getSlot(), eventPlayer), eventPlayer.getStatistic(Stat.ELIMINATIONS), null))
-        printLog(", {0} , \"TS_DeatTS_Environmental\" , \"{1}\" , \"{2}\"".format("\"{0}\" , \"{1}\" , \"{2}\"".format(eventPlayer.getTeam(), eventPlayer.getSlot(), eventPlayer), eventPlayer.getStatistic(Stat.ENVIRONMENTAL_DEATHS), null))
+        printLog(", {0} , \"TS_Deaths_Environmental\" , \"{1}\" , \"{2}\"".format("\"{0}\" , \"{1}\" , \"{2}\"".format(eventPlayer.getTeam(), eventPlayer.getSlot(), eventPlayer), eventPlayer.getStatistic(Stat.ENVIRONMENTAL_DEATHS), null))
         printLog(", {0} , \"TS_Kills_Environmental\" , \"{1}\" , \"{2}\"".format("\"{0}\" , \"{1}\" , \"{2}\"".format(eventPlayer.getTeam(), eventPlayer.getSlot(), eventPlayer), eventPlayer.getStatistic(Stat.ENVIRONMENTAL_KILLS), null))
         printLog(", {0} , \"TS_FinalBlows\" , \"{1}\" , \"{2}\"".format("\"{0}\" , \"{1}\" , \"{2}\"".format(eventPlayer.getTeam(), eventPlayer.getSlot(), eventPlayer), eventPlayer.getStatistic(Stat.FINAL_BLOWS), null))
         printLog(", {0} , \"TS_Healing_Dealt\" , \"{1}\" , \"{2}\"".format("\"{0}\" , \"{1}\" , \"{2}\"".format(eventPlayer.getTeam(), eventPlayer.getSlot(), eventPlayer), eventPlayer.getStatistic(Stat.HEALING_DEALT), null))
@@ -815,7 +903,7 @@ def Summary():
 
 rule "Hero Summary on End of Match":
     @Event eachPlayer
-    @Condition RoundCounter > 1
+    @Condition RoundCounter > 2
     Summary()
     wait(2)
     declareDraw()

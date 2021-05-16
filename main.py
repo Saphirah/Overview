@@ -2,7 +2,7 @@ from pystray import Icon as icon, Menu as menu, MenuItem as item
 from PIL import Image, ImageDraw
 from flask import Flask, render_template, Blueprint, request, jsonify, redirect, url_for
 from buildwebsite import *
-import random, webbrowser, threading, time, d3dshot
+import random, webbrowser, threading, time
 import sqlite3 as sl
 
 
@@ -39,6 +39,8 @@ def openPlayer(playerID):
         if Accuracy[0] != None and int(Accuracy[1]) != 0:
             wb.components.append(CFieldStat(Accuracy[0], int(float(Accuracy[1]))))
     
+    wb.components.append(CFieldMapLocations(playerID))
+
     return wb.Draw()
 
 #TODO: put webserver into seperate py file
@@ -65,8 +67,6 @@ def openMatch(matchID: int) -> str:
     #Accuracy Round Progress Bar
     wb.components.append(CTitle("Team Comparison"))
     wb.components.append(CFieldDiagramCircleTeamComparison(matchID))
-    Accuracy = db.GetPlayerSummary(97, "HS_Accuracy")
-    wb.components.append(CFieldCircularProgressBar(Accuracy[0], float(Accuracy[1])))
 
     #All stats
     heroStats = db.Submit("SELECT DISTINCT tbl_Events.eventName, eventText FROM tbl_Events INNER JOIN cst_EventName ON tbl_Events.eventName = cst_EventName.eventName WHERE tbl_Events.eventName Like 'HS%';").fetchall()
