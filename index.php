@@ -90,10 +90,16 @@
     <body>
         <div class="navigator">
             <div class="navigatorElement", style="padding-left: 13px; margin-bottom: 50px; font-family: 'montseratBold';">
-                <img src="/icon.png", style="width: 50px; height:50px; background-color: transparent; margin-right: 20px;"> Overview
+                <img src="/icon.png", style="width: 50px; height:50px; background-color: transparent; margin-right: 20px;">
+                <?php 
+                session_start();
+                    if(isset($_SESSION['userName']))
+                        echo($_SESSION['userName']);
+                    else
+                        echo("Overview");
+                ?>
             </div>
             <?php
-                session_start();
                 $db  = new PDO("sqlite:c:/xampp/htdocs/stats.db");
                 $pages = $db->query('SELECT pageLink, pageIcon, pageName FROM wb_Pages ORDER BY pageID');
                 foreach($pages->fetchAll() as $page){

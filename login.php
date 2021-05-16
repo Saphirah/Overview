@@ -25,11 +25,11 @@
                 $password = $_POST['password'];
                 if(strlen($username) == 0){
                     echo("<br>Please enter a valid username!");
-                    exit();
+                    goto renderScreen;
                 }
                 if(strlen($password) == 0){
                     echo("<br>Please enter a valid password");
-                    exit();
+                    goto renderScreen;
                 }
 
                 $db  = new PDO("sqlite:c:/xampp/htdocs/stats.db");
@@ -40,6 +40,7 @@
                     echo("<script>parent.location.reload();</script>");
                 } else {
                     echo("<br>Login failed. Please check your credentials!");
+                    goto renderScreen;
                 }
             //User is trying to Register a new Account
             }elseif(isset($_POST['registerUsername']) && isset($_POST['registerEmail']) && isset($_POST['registerPassword'])) {
@@ -49,15 +50,15 @@
               
                 if(!filter_var($email, FILTER_VALIDATE_EMAIL)) {
                     echo '<br>Bitte eine gültige E-Mail-Adresse eingeben<br>';
-                    exit();
+                    goto renderScreen;
                 }     
                 if(strlen($password) == 0) {
                     echo '<br>Please enter a password';
-                    exit();
+                    goto renderScreen;
                 }
                 if(strlen($username) == 0) {
                     echo '<br>Please enter a username';
-                    exit();
+                    goto renderScreen;
                 }
                 
                 //Überprüfe, dass die E-Mail-Adresse noch nicht registriert wurde
@@ -69,7 +70,7 @@
                         echo '<br>Diese E-Mail-Adresse ist bereits vergeben';
                     else
                         echo '<br>Dieser Benutzername ist bereits vergeben';
-                    exit();
+                    goto renderScreen;
                 }    
                 
                 //Encrypt Password and create Account
@@ -84,8 +85,10 @@
                     echo("<script>parent.location.reload();</script>");
                 } else {
                     echo '<br>Saving your credentials failed!';
+                    goto renderScreen;
                 }
-            }else{ 
+            }else{
+renderScreen:
         ?>
         <!-- Header -->
         <div class='navigation' style='background-image: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), url(/static/Images/Maps_Header/KingsRow.jpg);'>
