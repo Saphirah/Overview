@@ -3,7 +3,6 @@
         <title>
             StatWatch
         </title>
-
         <link rel='stylesheet' href='/static/style.scss'>
         <link rel='stylesheet' href='/static/login.scss'>
         <link rel='stylesheet' href='/static/customCheckbox.scss'>
@@ -13,13 +12,14 @@
     </head>
 
     <body>
-
-    <?php
+        <?php
             session_start();
+            //Check if already logged in, then logout
             if(isset($_SESSION['userid'])){
                 unset($_SESSION['userid']);
                 unset($_SESSION['userName']);
                 echo("<script>parent.location.reload();</script>");
+            //User is trying to login
             }elseif(isset($_POST['username']) && isset($_POST['password'])){
                 $username = $_POST['username'];
                 $password = $_POST['password'];
@@ -41,6 +41,7 @@
                 } else {
                     echo("<br>Login failed. Please check your credentials!");
                 }
+            //User is trying to Register a new Account
             }elseif(isset($_POST['registerUsername']) && isset($_POST['registerEmail']) && isset($_POST['registerPassword'])) {
                 $username = $_POST['registerUsername'];
                 $email = $_POST['registerEmail'];
@@ -70,15 +71,17 @@
                         echo '<br>Dieser Benutzername ist bereits vergeben';
                     exit();
                 }    
-            
+                
+                //Encrypt Password and create Account
                 $password_hash = password_hash($password, PASSWORD_DEFAULT);
                 $result = $db->query("INSERT INTO wb_Account(accountEmail, accountPassword, accountName) VALUES ('".$email."', '".$password_hash."', '".$username."')");
                 
-
+                //Login user and redirect to main page
                 if($result) {        
                     $user = $db->query("SELECT * FROM wb_Account WHERE accountEmail = '" . $email . "' AND accountName = '" . $username . "'")->fetch();
+                    $_SESSION['userid'] = $user['accountID'];
+                    $_SESSION['userName'] = $user['accountName'];
                     echo("<script>parent.location.reload();</script>");
-                    $showFormular = false;
                 } else {
                     echo '<br>Saving your credentials failed!';
                 }
@@ -119,11 +122,11 @@
                         <input class="loginButton enlargeField" type="submit" value="Register">
                     </form>
                 </div>
-            </body>
-        </html>
         <?php
             }
         ?>
+    </body>
+</html>
 
 
         
