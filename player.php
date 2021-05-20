@@ -33,6 +33,22 @@
                 </h1>
             </div>
         </div>
+
+        <?php
+        
+            switch($player["roleID_F"]){
+                case 1:
+                    include './static/phpComponents/tankSummary.php';
+                    break;
+                case 2:
+                    include './static/phpComponents/dpsSummary.php';
+                    break;
+                case 3:
+                    include './static/phpComponents/supportSummary.php';
+                    break;
+            }
+        
+        ?>
         <div class="dateField">Ultimate Usage</div>
         <div style="width:100px; float: left; margin-right: 10px; margin-bottom: 10px;">
             <div class="frame">
@@ -44,7 +60,7 @@
                 <div style="height: 50%;"><?= $player["Ultimates_Used"] ?></div>
             </div>
         </div>
-        <div class="frame" style="height: 210px; width: 550px; padding: 10px; padding-top: 15px;padding-right: 15px;">
+        <div class="frame" style="height: 210px; width: 540px; padding: 10px; padding-top: 15px;padding-right: 15px;">
             <canvas id="ultChargeChart"></canvas>
         </div>
         <div style="width:100px; float: left; margin-right: 10px; margin-bottom: 10px;">
@@ -82,7 +98,9 @@
                     label: 'Ultimate Charge',
                     data: [
                         <?php
-                            $UltCharges = $db->query('SELECT * FROM tbl_Player_UltimateCharge WHERE playerID_F = '.$_GET["playerID"])->fetchAll();
+                            if(!isset($playerID))
+                                $playerID = $_GET["playerID"];
+                            $UltCharges = $db->query('SELECT * FROM tbl_Player_UltimateCharge WHERE playerID_F = '.$playerID)->fetchAll();
                             foreach($UltCharges as $UltCharge){
                                 echo("{x: \"".$UltCharge["gameTime"]."\", y: ".$UltCharge["chargeValue"]."},");
                             }
@@ -143,7 +161,7 @@
                     }
                 }
             };
-            var ultChargeChart_<?= $player["playerID"] ?> = new Chart(ctx, config);
+            var ultChargeChart_<?= $playerID?> = new Chart(ctx, config);
         </script>
     </body>
 </html>

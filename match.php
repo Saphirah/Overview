@@ -29,7 +29,7 @@
             $date = explode("-", $match["matchDate"]);
             $match["matchDate"] = $date[2].".".$date[1].".".$date[0];
 
-            $players = $db->query("SELECT playerID, playerName, teamName
+            $players = $db->query("SELECT playerID, playerName, teamName, teamID
                                     FROM tbl_Player INNER JOIN tbl_Team ON teamID = teamID_F
                                     WHERE matchID_F = ".$match["matchID"]." 
                                     ORDER BY teamName")->fetchAll();
@@ -45,7 +45,8 @@
 
         <div class="frame" style="padding: 20px; width: 100%; height: 440px; overflow: visible; box-sizing: border-box;">
             <?php
-                include 'timeline.php';
+                $teamID_F = $players[0]["teamID"] - ($players[0]["teamID"] % 2);
+                include './static/phpComponents/timeline.php';
             ?>
         </div>
     </body>

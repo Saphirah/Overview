@@ -165,11 +165,19 @@
                                 $db->query($sqlFirstStr . "playerID_F) " . $sqlSecondStr . $playerID . ");");
                             }
 
+                            $ultEvents = $db->query("SELECT gameTime, eventName,  FROM tbl_Events_Tmp WHERE (eventName = 'EV_UsedAbility_Ultimate' OR eventName = 'EV_Charge_Ultimate') AND playerName = '".$player["eventValue"]."' AND team = '".$team[0]."' AND slot = ".$player["slot"])->fetch()[0];
+                            $currentTime = "00:00:00";
+                            
+                            foreach($ultEvents as $ultEvent){
+
+                            }
+
                             //Create Additional Total Summary
                             $enemiesKnocked = $db->query("SELECT COUNT(*) FROM tbl_Events_Tmp WHERE eventName = 'EV_Knockback_Dealt' AND playerName = '".$player["eventValue"]."' AND team = '".$team[0]."' AND slot = ".$player["slot"])->fetch()[0];
                             $Ability2Use = $db->query("SELECT COUNT(*) FROM tbl_Events_Tmp WHERE eventName = 'EV_UsedAbility_2' AND playerName = '".$player["eventValue"]."' AND team = '".$team[0]."' AND slot = ".$player["slot"])->fetch()[0];
                             $Ability1Use = $db->query("SELECT COUNT(*) FROM tbl_Events_Tmp WHERE eventName = 'EV_UsedAbility_1' AND playerName = '".$player["eventValue"]."' AND team = '".$team[0]."' AND slot = ".$player["slot"])->fetch()[0];
                             $gotKnocked = $db->query("SELECT COUNT(*) FROM tbl_Events_Tmp WHERE eventName = 'EV_Knockback_Received' AND playerName = '".$player["eventValue"]."' AND team = '".$team[0]."' AND slot = ".$player["slot"])->fetch()[0];
+                            
                             $db->query("UPDATE tbl_Player_Statistic_Total 
                                         SET Enemies_Knocked = ".$enemiesKnocked.", Got_Knocked = ".$gotKnocked.", Ability1_Used = ".$Ability1Use.", Ability2_Used = ".$Ability2Use."
                                         WHERE playerID_F = ".$playerID);
