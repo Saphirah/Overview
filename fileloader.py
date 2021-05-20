@@ -79,6 +79,7 @@ class FileLoader():
         self.db.Submit("DELETE FROM tbl_Player_Communication")
         self.db.Submit("DELETE FROM tbl_Player_UltimateCharge")
         self.db.Commit()
+        
 
 FileLoader().ResetDatabase()
 #FileLoader().LoadFile()
