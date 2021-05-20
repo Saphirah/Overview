@@ -10,7 +10,7 @@
     </head>
     <body>
         <!-- Header -->
-        <div class='navigation' style='background-image: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), url(/static/Images/Maps_Header/KingsRow.jpg);'>
+        <div class='navigation' style='background-image: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), url(/static/Images/Maps_Header/KingsRow.jpg); height: 170px;'>
             <div>
                 <h1>Overview</h1>
                 <h5 style="font-family: 'montseratLight';">
@@ -46,13 +46,13 @@
                     print("<div class=\"dateField\">" . $match['matchDate'] . "</div>");
                 }
                 print("
-                <a href=\"/match/" . $match['matchID'] . "-0\">
+                <a href=\"/match.php?matchID=" . $match['matchID'] . "\">
                     <span class=\"match enlargeField\" onclick=\"selectMatch_" . $match['matchID'] . "()\">
                         <div class=\"matchImage\" style=\"overflow: hidden; background-image: url('/static/Images/Maps_Prev/" . $match['imageName'] . ".jpg');\">
                             <div class=\"mapName\">" . $match['mapName'] . "</div>
                         </div>
-                        <div style=\"padding: 10px;height: fit-content; background-color: '" . $match['typeColor'] . "'; text-align: center; color: white; transform: translateZ(1px);\">" . $match['typeName'] . "</div>
-                        <div style=\"padding: 4px; background-color:#27ae60; text-align: center; color: white;transform: translateZ(1px);\">" . $match["score"] . "</div>");
+                        <div style=\"padding: 10px;height: fit-content; background-color: " . $match['typeColor'] . "; border-radius:0;text-align: center; color: white; transform: translateZ(1px);\">" . $match['typeName'] . "</div>
+                        <div style=\"padding: 4px; background-color:#27ae60; text-align: center; color: white;transform: translateZ(1px);border-radius:0;\">" . $match["score"] . "</div>");
                 //TODO: Implement Hero Preview
                 //$heroes = $db.query('SELECT eventValue FROM tbl_Events');
                 //foreach([1,2,3,4,5,6] as $hero){

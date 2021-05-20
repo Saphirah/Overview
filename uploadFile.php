@@ -12,7 +12,7 @@
 
     <body>
         <!-- Header -->
-        <div class='navigation' style='background-image: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), url(/static/Images/Maps_Header/KingsRow.jpg);'>
+        <div class='navigation' style='background-image: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), url(/static/Images/Maps_Header/KingsRow.jpg); height: 170px;'>
             <div>
                 <h1>Overview</h0>
                 <h5 style="font-family: 'montseratLight';">
@@ -22,7 +22,7 @@
         </div>
 
         <!-- Upload Field -->
-        <div id="dragAndDropField" class='navigation enlargeField' style='background-image: linear-gradient(#2c3e5088, #2c3e5044); width: 50%; margin: 0 auto;' onclick="document.getElementById('file-input').click();"  ondrop="dropHandler(event);">
+        <div id="dragAndDropField" class='navigation enlargeField' style='background-image: linear-gradient(#2c3e5088, #2c3e5044); width: 50%; height: 250px; margin: 0 auto;' onclick="document.getElementById('file-input').click();"  ondrop="dropHandler(event);">
             <div>
                 <i class="fas fa-upload" style="font-size: 60;"></i>
                 <h1>Drag and drop files here!</h1>
@@ -107,6 +107,7 @@
 
                     //Get Map
                     $mapID = $db->query("SELECT mapID FROM cst_Maps WHERE mapName = (SELECT eventValue FROM tbl_Events_Tmp WHERE eventName = 'EV_LoadMap')")->fetch();
+                    $matchLength = $db->query("SELECT gameTime FROM tbl_Events_Tmp ORDER BY gameTime DESC LIMIT 1")->fetch()[0];
                     if(!isset($mapID)){
                         $error = "The map was not found";
                         goto cancel;
@@ -126,8 +127,8 @@
                     }
 
                     //Create Match Entry
-                    $prepare = $db->prepare("INSERT INTO tbl_Match(matchTypeID_F, mapID_F, matchDate, matchTime) VALUES(?, ?, ?, ?)");
-                    $prepare->execute(array(2, $mapID[0], $matchDate, $matchTime));
+                    $prepare = $db->prepare("INSERT INTO tbl_Match(matchTypeID_F, mapID_F, matchDate, matchTime, matchLength) VALUES(?, ?, ?, ?, ?)");
+                    $prepare->execute(array(2, $mapID[0], $matchDate, $matchTime, $matchLength));
 
                     $matchID = $db->query("SELECT matchID FROM tbl_Match ORDER BY matchID DESC LIMIT 1")->fetch()[0];
 
@@ -166,9 +167,13 @@
 
                             //Create Additional Total Summary
                             $enemiesKnocked = $db->query("SELECT COUNT(*) FROM tbl_Events_Tmp WHERE eventName = 'EV_Knockback_Dealt' AND playerName = '".$player["eventValue"]."' AND team = '".$team[0]."' AND slot = ".$player["slot"])->fetch()[0];
-                            $db->query("UPDATE tbl_Player_Statistic_Total SET Enemies_Knocked = ".$enemiesKnocked." WHERE playerID_F = ".$playerID);
+                            $Ability2Use = $db->query("SELECT COUNT(*) FROM tbl_Events_Tmp WHERE eventName = 'EV_UsedAbility_2' AND playerName = '".$player["eventValue"]."' AND team = '".$team[0]."' AND slot = ".$player["slot"])->fetch()[0];
+                            $Ability1Use = $db->query("SELECT COUNT(*) FROM tbl_Events_Tmp WHERE eventName = 'EV_UsedAbility_1' AND playerName = '".$player["eventValue"]."' AND team = '".$team[0]."' AND slot = ".$player["slot"])->fetch()[0];
                             $gotKnocked = $db->query("SELECT COUNT(*) FROM tbl_Events_Tmp WHERE eventName = 'EV_Knockback_Received' AND playerName = '".$player["eventValue"]."' AND team = '".$team[0]."' AND slot = ".$player["slot"])->fetch()[0];
-                            $db->query("UPDATE tbl_Player_Statistic_Total SET Got_Knocked = ".$gotKnocked." WHERE playerID_F = ".$playerID);
+                            $db->query("UPDATE tbl_Player_Statistic_Total 
+                                        SET Enemies_Knocked = ".$enemiesKnocked.", Got_Knocked = ".$gotKnocked.", Ability1_Used = ".$Ability1Use.", Ability2_Used = ".$Ability2Use."
+                                        WHERE playerID_F = ".$playerID);
+
 
                             //Create Hero Summary
                             $heroes = $db->query("SELECT DISTINCT eventValue, heroID 
@@ -198,13 +203,14 @@
                                 foreach($positions as $position){
                                     $pos = explode(", ", str_replace(")", "", str_replace("(", "", $position["eventValue"])));
                                     $prepare = $db->prepare("INSERT INTO tbl_Player_Position(playerID_F, gameTime, positionX, positionY, positionZ) VALUES(?, ?, ?, ?, ?)");
-                                    $prepare->execute(array($playerID, $position["gameTime"], $pos[0], $pos[1], $pos[2]));
+                                    if(count($pos)==3)
+                                        $prepare->execute(array($playerID, $position["gameTime"], $pos[0], $pos[1], $pos[2]));
                                 }
                             }
 
                             //Create Communications
                             $coms = $db->query("PRAGMA table_info(tbl_Player_Communication);")->fetchAll();
-                            array_shift($coms);
+                            array_shift($coms); //remove ID Value
                             $db->query("INSERT INTO tbl_Player_Communication(playerID_F) VALUES(".$playerID.");");
                             foreach($coms as $com){
                                 $db->query("UPDATE tbl_Player_Communication SET ".$com[1]." = (SELECT COUNT(*) FROM tbl_Events_Tmp WHERE eventName = 'COM_".$com[1]."' AND playerName = '".$player["eventValue"]."' AND team = '".$team[0]."' AND slot = ".$player["slot"].") WHERE playerID_F = ".$playerID);
@@ -212,9 +218,20 @@
                         }
                     }
 
+                    //Save Ultimate Charge
+                    $db->query("INSERT INTO tbl_Player_UltimateCharge (playerID_F, gameTime, chargeValue) 
+                                SELECT playerID, gameTime, eventValue
+                                FROM tbl_Events_Tmp INNER JOIN tbl_Player ON (slot = playerSlot AND tbl_Events_Tmp.playerName = tbl_Player.playerName)
+                                WHERE eventName = 'EV_Charge_Ultimate'");
+
                     //DEBUG
-                    $db->query("DELETE FROM tbl_Events_Tmp WHERE eventName Like 'TS_%' OR eventName Like 'HS_%' OR eventName = 'EV_LoadMap' OR eventName = 'EV_PlayerJoinedMatch' OR eventName = 'EV_SwitchedHero' OR eventName = 'EV_PlayerPosition'");
+                    $db->query("DELETE FROM tbl_Events_Tmp WHERE eventName Like 'TS_%' OR eventName Like 'HS_%' OR eventName = 'EV_LoadMap' OR eventName = 'EV_PlayerPosition' OR eventName = 'EV_Charge_Ultimate'");
                     
+                    //Save all events
+                    $db->query("INSERT INTO tbl_Events (playerID_F, gameTime, eventName, eventValue, eventTarget)
+                                SELECT playerID, gameTime, eventName, eventValue, eventTarget
+                                FROM tbl_Events_Tmp INNER JOIN tbl_Player ON (slot = playerSlot AND tbl_Events_Tmp.playerName = tbl_Player.playerName)");
+
                     //Store Changes in DB
                     $db->commit();
                     return "<div class='uploadMessage_Frame' style=\"animation-delay: " . $i/5 . "s;\">Successfully Uploaded File " . $filename."</div>";

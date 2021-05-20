@@ -77,6 +77,7 @@ class FileLoader():
         self.db.Submit("DELETE FROM tbl_Player_Statistic_Hero")
         self.db.Submit("DELETE FROM tbl_Player_Position")
         self.db.Submit("DELETE FROM tbl_Player_Communication")
+        self.db.Submit("DELETE FROM tbl_Player_UltimateCharge")
         self.db.Commit()
 
 FileLoader().ResetDatabase()

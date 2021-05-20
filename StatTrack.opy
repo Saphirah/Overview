@@ -407,6 +407,7 @@ rule "Events - Switched Hero":
     @Condition eventPlayer.hasSpawned() == true
     @Condition eventPlayer.CurrentHero != eventPlayer.getCurrentHero()
     @Condition createWorkshopSetting(bool, "Enable Stats", "Switched Heroes", true, 0) == true
+    @Condition eventPlayer.getCurrentHero() != ""
     V_Nametag = "EV_SwitchedHero"
     V_Value = eventPlayer.getCurrentHero()
     Log()

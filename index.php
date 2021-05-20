@@ -33,7 +33,7 @@
         iframe{
             height: 100%;
             width: calc(100% - 80px);
-            padding-left: 60px;
+            margin-left: 80px;
             background-image: url("/static/Images/Background/background.jpg");
         }
         body{
@@ -124,6 +124,6 @@
                     echo("fas fa-sign-in-alt'></i>Login</div>");
             ?>
         </div>
-        <iframe src="mainPage.php", id="content" allowtransparency="true" frameborder="0" ></iframe><!-- sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts allow-forms" -->
+        <iframe src="mainPage.php", id="content" allowtransparency="true" frameborder="0"></iframe>
     </body>
 </html>
