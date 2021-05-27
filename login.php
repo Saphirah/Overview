@@ -32,7 +32,7 @@
                     goto renderScreen;
                 }
 
-                $db  = new PDO("sqlite:c:/xampp/htdocs/stats.db");
+                $db  = new PDO("sqlite:stats.db");
                 $user = $db->query("SELECT * FROM wb_Account WHERE accountEmail = '" . $username . "' or accountName = '" . $username . "'")->fetch();
                 if($user !== false && password_verify($password, $user["accountPassword"])){
                     $_SESSION['userid'] = $user['accountID'];
@@ -62,7 +62,7 @@
                 }
                 
                 //Überprüfe, dass die E-Mail-Adresse noch nicht registriert wurde
-                $db  = new PDO("sqlite:c:/xampp/htdocs/stats.db");
+                $db  = new PDO("sqlite:stats.db");
                 $user = $db->query("SELECT * FROM wb_Account WHERE accountEmail = '" . $email . "' or accountName = '" . $username . "'")->fetch();
                 
                 if($user !== false) {
@@ -91,7 +91,7 @@
 renderScreen:
         ?>
         <!-- Header -->
-        <div class='navigation' style='background-image: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), url(/static/Images/Maps_Header/KingsRow.jpg);'>
+        <div class='navigation' style='padding-bottom: 140px;background-image: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), url(/static/Images/Maps_Header/kingsrow.jpg);'>
                     <div>
                         <h1>Overview</h0>
                         <h5 style="font-family: 'montseratLight';">

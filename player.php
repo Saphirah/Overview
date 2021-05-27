@@ -20,13 +20,13 @@
                 exit();
             }
 
-            $db  = new PDO("sqlite:c:/xampp/htdocs/stats.db");
+            $db  = new PDO("sqlite:stats.db");
             $player = $db->query('SELECT *
                                     FROM tbl_Player INNER JOIN tbl_Player_Statistic_Total ON playerID = playerID_F
                                     WHERE playerID = '.$_GET["playerID"])->fetch();
         ?>
         <!-- Header -->
-        <div class='navigation' style='padding-bottom: 0;background-image: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), url(/static/Images/Maps_Header/KingsRow.jpg);'>
+        <div class='navigation' style='padding-bottom: 0;background-image: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), url("./static/Images/Maps_Header/kingsrow.jpg");'>
             <div>
                 <h1 style='line-height = 50%;'>
                     Summary of <?= $player["playerName"]?>

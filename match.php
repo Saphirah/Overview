@@ -20,7 +20,7 @@
                 return $length[0] * 3600 + $length[1] * 60 + $length[2];
             }
 
-            $db  = new PDO("sqlite:c:/xampp/htdocs/stats.db");
+            $db  = new PDO("sqlite:stats.db");
             $match = $db->query('SELECT matchID, matchLength, matchDate, mapName, imageName, typeName, typeColor, group_concat(teamScore, " - ") AS score
             FROM tbl_Match INNER JOIN cst_MatchType ON matchTypeID_F = typeID INNER JOIN cst_Maps ON mapID = mapID_F INNER JOIN tbl_Team ON matchID = matchID_f
             WHERE matchID = '.$_GET["matchID"].'
@@ -35,7 +35,7 @@
                                     ORDER BY teamName")->fetchAll();
         ?>
         <!-- Header -->
-        <div class='navigation' style='padding-bottom: 0;background-image: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), url(/static/Images/Maps_Header/KingsRow.jpg);'>
+        <div class='navigation' style='padding-bottom: 0;background-image: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), url(/static/Images/Maps_Header/kingsrow.jpg);'>
             <div>
                 <h1 style='line-height = 50%;'>
                     <?= $match["typeName"]. " on ". $match["mapName"]?>

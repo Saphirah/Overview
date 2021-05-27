@@ -12,7 +12,7 @@
 
     <body>
         <!-- Header -->
-        <div class='navigation' style='background-image: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), url(/static/Images/Maps_Header/KingsRow.jpg); height: 170px;'>
+        <div class='navigation' style='background-image: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), url("static/Images/Maps_Header/kingsrow.jpg"); height: 170px;'>
             <div>
                 <h1>Overview</h0>
                 <h5 style="font-family: 'montseratLight';">
@@ -61,7 +61,7 @@
         <!-- Process Uploaded Files -->
         <?php
             session_start();
-            $db  = new PDO("sqlite:c:/xampp/htdocs/stats.db");
+            $db  = new PDO("sqlite:stats.db");
             
             if(isset($_FILES['files'])){
                 $countfiles = count($_FILES['files']['name']);
@@ -165,21 +165,61 @@
                                 $db->query($sqlFirstStr . "playerID_F) " . $sqlSecondStr . $playerID . ");");
                             }
 
-                            $ultEvents = $db->query("SELECT gameTime, eventName,  FROM tbl_Events_Tmp WHERE (eventName = 'EV_UsedAbility_Ultimate' OR eventName = 'EV_Charge_Ultimate') AND playerName = '".$player["eventValue"]."' AND team = '".$team[0]."' AND slot = ".$player["slot"])->fetch()[0];
-                            $currentTime = "00:00:00";
-                            
-                            foreach($ultEvents as $ultEvent){
+                            $ultEvents = $db->query("SELECT gameTime, eventName, eventValue FROM tbl_Events_Tmp WHERE (eventName = 'EV_UsedAbility_Ultimate' OR eventName = 'EV_Charge_Ultimate') AND playerName = '".$player["eventValue"]."' AND team = '".$team[0]."' AND slot = ".$player["slot"])->fetchAll();
+                            $startTime = 0;
+                            $lastEarned = false;
 
+                            $earnTimeAvg = 0;
+                            $earnTimeMax = 0;
+                            $earnTimeMin = 0;
+                            $holdTimeAvg = 0;
+                            $holdTimeMax = 0;
+                            $holdTimeMin = 0;
+                            $usedUltimate = 0;
+                            $earnedUltimate = 0;
+
+                            foreach($ultEvents as $ultEvent){
+                                $time = explode(":",$ultEvent["gameTime"]);
+                                $time = $time[0] * 3600 + $time[1] * 60 + $time[2];
+
+                                if($ultEvent["eventName"] == "EV_UsedAbility_Ultimate"){
+                                    $lastEarned = false;
+                                    $usedUltimate += 1;
+                                    if(!$lastEarned){
+                                        $earnedUltimate += 1;
+                                        $holdTime = 1;
+                                    }
+                                    else
+                                        $holdTime += $time - $startTime;
+                                    $holdTimeAvg += $holdTime;
+                                    $holdTimeMax = max($holdTimeMax, $holdTime);
+                                    $holdTimeMin = min($holdTimeMin, $holdTime);
+                                    $startTime = $time;
+                                } elseif(!$lastEarned and $ultEvent["eventValue"]>=100){
+                                    $lastEarned = true;
+                                    $earnedUltimate += 1;
+                                    $earnTimeAvg += $time - $startTime;
+                                    $earnTimeMin = min($earnTimeMin, $time - $startTime);
+                                    $earnTimeMax = max($earnTimeMax, $time - $startTime);
+                                    $startTime = $time;
+                                }
                             }
+                            $holdTimeAvg /= max($usedUltimate,1);
+                            $earnTimeAvg /= max($earnedUltimate,1);
+
 
                             //Create Additional Total Summary
                             $enemiesKnocked = $db->query("SELECT COUNT(*) FROM tbl_Events_Tmp WHERE eventName = 'EV_Knockback_Dealt' AND playerName = '".$player["eventValue"]."' AND team = '".$team[0]."' AND slot = ".$player["slot"])->fetch()[0];
                             $Ability2Use = $db->query("SELECT COUNT(*) FROM tbl_Events_Tmp WHERE eventName = 'EV_UsedAbility_2' AND playerName = '".$player["eventValue"]."' AND team = '".$team[0]."' AND slot = ".$player["slot"])->fetch()[0];
                             $Ability1Use = $db->query("SELECT COUNT(*) FROM tbl_Events_Tmp WHERE eventName = 'EV_UsedAbility_1' AND playerName = '".$player["eventValue"]."' AND team = '".$team[0]."' AND slot = ".$player["slot"])->fetch()[0];
                             $gotKnocked = $db->query("SELECT COUNT(*) FROM tbl_Events_Tmp WHERE eventName = 'EV_Knockback_Received' AND playerName = '".$player["eventValue"]."' AND team = '".$team[0]."' AND slot = ".$player["slot"])->fetch()[0];
-                            
+
                             $db->query("UPDATE tbl_Player_Statistic_Total 
-                                        SET Enemies_Knocked = ".$enemiesKnocked.", Got_Knocked = ".$gotKnocked.", Ability1_Used = ".$Ability1Use.", Ability2_Used = ".$Ability2Use."
+                                        SET Enemies_Knocked = ".$enemiesKnocked.", Got_Knocked = ".$gotKnocked.", 
+                                            Ultimates_EarnTime_Avg = ".$earnTimeAvg.", Ultimates_EarnTime_Max = ".$earnTimeMax.", Ultimates_EarnTime_Min = ".$earnTimeMin.", 
+                                            Ultimates_HoldTime_Avg = ".$holdTimeAvg.", Ultimates_HoldTime_Max = ".$holdTimeMax.", Ultimates_HoldTime_Min = ".$holdTimeMin.", 
+                                            Ultimates_Used = ".$usedUltimate.", Ultimates_Earned = ".$earnedUltimate.", 
+                                            Ability1_Used = ".$Ability1Use.", Ability2_Used = ".$Ability2Use."
                                         WHERE playerID_F = ".$playerID);
 
 

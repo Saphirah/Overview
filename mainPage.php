@@ -10,7 +10,7 @@
     </head>
     <body>
         <!-- Header -->
-        <div class='navigation' style='background-image: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), url(/static/Images/Maps_Header/KingsRow.jpg); height: 170px;'>
+        <div class='navigation' style='background-image: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), url("static/Images/Maps_Header/kingsrow.jpg"); height: 170px;'>
             <div>
                 <h1>Overview</h1>
                 <h5 style="font-family: 'montseratLight';">
@@ -34,7 +34,7 @@
         </script>
         <!-- Matches -->
         <?php
-            $db  = new PDO("sqlite:c:/xampp/htdocs/stats.db");
+            $db  = new PDO("sqlite:stats.db");
             $matches = $db->query('SELECT matchID, matchDate, mapName, imageName, typeName, typeColor, group_concat(teamScore, "-") AS score
                                         FROM tbl_Match INNER JOIN cst_MatchType ON matchTypeID_F = typeID INNER JOIN cst_Maps ON mapID = mapID_F INNER JOIN tbl_Team ON matchID = matchID_f
                                         GROUP BY matchID, matchDate, mapName, imageName, typeName, typeColor

@@ -8,7 +8,7 @@
 <div style="height:80%; width: 6%; float: left; padding-top: 16px;">
 <?php
     if(!isset($db))
-        $db  = new PDO("sqlite:c:/xampp/htdocs/stats.db");
+        $db  = new PDO("sqlite:stats.db");
     if(!isset($teamID_F))
         $teamID_F = 224;
     $cEvents = $db->query("SELECT gameTime, playerSlot, eventValue, eventName, teamID_F, playerName, playerID
@@ -29,7 +29,7 @@
 
     <div onclick="window.location.href='/player.php?playerID=<?= $player[1] ?>';" 
         class="timelineFrame enlargeField" data-tooltip="Click to open the player summary!" 
-        style="display: inline-block;width: 122%; border-top-right-radius: 0; border-bottom-right-radius: 0; position:relative; height: 22px;"><?= $player[0] ?></div>
+        style="display: inline-block;width: 122%; border-top-right-radius: 0; border-bottom-right-radius: 0; position:relative; height: 21.4px;"><?= $player[0] ?></div>
 
 <?php
         }

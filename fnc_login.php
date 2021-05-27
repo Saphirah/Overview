@@ -1,2 +1,2 @@
-$db  = new PDO("sqlite:c:/xampp/htdocs/stats.db");
+$db  = new PDO("sqlite:stats.db");
 $username = $_SESSION['userid']

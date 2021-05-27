@@ -100,7 +100,7 @@
                 ?>
             </div>
             <?php
-                $db  = new PDO("sqlite:c:/xampp/htdocs/stats.db");
+                $db  = new PDO("sqlite:stats.db");
                 $pages = $db->query('SELECT pageLink, pageIcon, pageName FROM wb_Pages ORDER BY pageID');
                 foreach($pages->fetchAll() as $page){
                     echo("<div class='navigatorElement' onclick='changeIframe(\"" . $page["pageLink"] . "\")'><i class='" . $page["pageIcon"] . "''></i>" . $page["pageName"] . "</div>");
