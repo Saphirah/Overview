@@ -582,6 +582,77 @@ rule "Tick Values - Received Healing":
     Log()
 
 
+#rule "============================STATISTICS Status==============================":
+
+rule "Events - Got Slept":
+    @Event eachPlayer
+    @Condition createWorkshopSetting(bool, "Enable Stats - Status", "Got Slept", true, 0) == true
+    @Condition eventPlayer.hasStatusEffect(Status.ASLEEP)
+    V_Nametag = "EV_Status_Slept"
+    Log()
+
+rule "Events - Got Burned":
+    @Event eachPlayer
+    @Condition createWorkshopSetting(bool, "Enable Stats - Status", "Got Burned", true, 0) == true
+    @Condition eventPlayer.hasStatusEffect(Status.BURNING)
+    V_Nametag = "EV_Status_Burned"
+    Log()
+
+rule "Events - Got Frozen":
+    @Event eachPlayer
+    @Condition createWorkshopSetting(bool, "Enable Stats - Status", "Got Frozen", true, 0) == true
+    @Condition eventPlayer.hasStatusEffect(Status.FROZEN)
+    V_Nametag = "EV_Status_Frozen"
+    Log()
+
+rule "Events - Got Hacked":
+    @Event eachPlayer
+    @Condition createWorkshopSetting(bool, "Enable Stats - Status", "Got Hacked", true, 0) == true
+    @Condition eventPlayer.hasStatusEffect(Status.HACKED)
+    V_Nametag = "EV_Status_Hacked"
+    Log()
+
+rule "Events - Got Invincible":
+    @Event eachPlayer
+    @Condition createWorkshopSetting(bool, "Enable Stats - Status", "Got Invincible", true, 0) == true
+    @Condition eventPlayer.hasStatusEffect(Status.INVINCIBLE)
+    V_Nametag = "EV_Status_Invincible"
+    Log()
+
+rule "Events - Got Knocked Down":
+    @Event eachPlayer
+    @Condition createWorkshopSetting(bool, "Enable Stats - Status", "Got Knocked Down", true, 0) == true
+    @Condition eventPlayer.hasStatusEffect(Status.KNOCKED_DOWN)
+    V_Nametag = "EV_Status_KnockedDown"
+    Log()
+
+rule "Events - Got Phased Out":
+    @Event eachPlayer
+    @Condition createWorkshopSetting(bool, "Enable Stats - Status", "Got Phased Out", true, 0) == true
+    @Condition eventPlayer.hasStatusEffect(Status.PHASED_OUT)
+    V_Nametag = "EV_Status_PhasedOut"
+    Log()
+
+rule "Events - Got Rooted":
+    @Event eachPlayer
+    @Condition createWorkshopSetting(bool, "Enable Stats - Status", "Got Rooted", true, 0) == true
+    @Condition eventPlayer.hasStatusEffect(Status.ROOTED)
+    V_Nametag = "EV_Status_Rooted"
+    Log()
+
+rule "Events - Got Stunned":
+    @Event eachPlayer
+    @Condition createWorkshopSetting(bool, "Enable Stats - Status", "Got Stunned", true, 0) == true
+    @Condition eventPlayer.hasStatusEffect(Status.STUNNED)
+    V_Nametag = "EV_Status_Stunned"
+    Log()
+
+rule "Events - Got Unkillable":
+    @Event eachPlayer
+    @Condition createWorkshopSetting(bool, "Enable Stats - Status", "Got Unkillable", true, 0) == true
+    @Condition eventPlayer.hasStatusEffect(Status.UNKILLABLE)
+    V_Nametag = "EV_Status_Unkillable"
+    Log()
 
 #rule "============================STATISTICS COMMUNICATION==============================":
 

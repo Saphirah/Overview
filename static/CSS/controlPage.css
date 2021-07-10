@@ -1,0 +1,78 @@
+@font-face {
+    font-family: "montseratNormal";
+    src: url("/static/Fonts/Montserrat-Medium.ttf"); ;
+}
+
+@font-face {
+    font-family: "montseratBold";
+    src: url("/static/Fonts/Montserrat-Bold.ttf"); ;
+}
+
+* {
+    padding: 0;
+    margin: 0;
+    border: 0 solid;
+    background: #1a1a1a00;
+    font-family: 'montseratNormal'; 
+}
+
+a, a:hover, a:focus, a:active {
+    text-decoration: none;
+    color: inherit;
+}
+
+iframe{
+    height: 100%;
+    width: calc(100% - 80px);
+    margin-left: 80px;
+    background-image: url("/static/Images/Background/background.jpg");
+}
+body{
+    background-image: url("/static/Images/Background/background.jpg");
+    background-repeat: no-repeat; 
+    background-attachment: fixed;
+    background-position: center;
+    background-size: cover;
+}
+.navigator{
+    width: 80px;
+    height: 100%;
+    background: #1a1a1a;
+    position: absolute;
+    transition: 0.5s;
+    transition-property: width;
+    overflow: hidden;
+}
+.navigator:hover{
+    width: 250px;
+}
+
+.navigator:hover > .navigatorElement{
+    color: white;
+}
+
+.navigatorElement{
+    height: 80px;
+    width: 100%;
+    padding-left: 20px;
+    padding-right: 10px;
+    font-size: 18;
+    color: rgba(1,1,1,0);
+    transition: all 0.5s;
+    display: flex;
+    align-items: center;
+    overflow:visible;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.navigatorElement i{
+    color: white;
+    font-size: 30;
+    margin-right: 15px;
+}
+
+.navigatorElement:hover{
+    background: #101010;
+    transform: translate(0px, -3px);
+}

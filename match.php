@@ -3,25 +3,20 @@
         <title>
             StatWatch
         </title>
-        <link rel='stylesheet' href='/static/style.scss'>
-        <link href="/static/css-circular-prog-bar.css" rel="stylesheet"/>
+        <link rel='stylesheet' href='/static/CSS/style.scss'>
+        <link href="/static/CSS/css-circular-prog-bar.css" rel="stylesheet"/>
         <link href = "/static/fontawesome/css/all.css" rel="stylesheet"/>
     </head>
     <body>
         <?php
-            session_start();
+            include_once("static/Model/Model.php");
+
             if(!isset($_GET["matchID"])){
                 echo("Invalid Match ID");
                 exit();
             }
 
-            function timeToSeconds($timeStr){
-                $length = explode(":",$timeStr);
-                return $length[0] * 3600 + $length[1] * 60 + $length[2];
-            }
-
-            $db  = new PDO("sqlite:stats.db");
-            $match = $db->query('SELECT matchID, matchLength, matchDate, mapName, imageName, typeName, typeColor, group_concat(teamScore, " - ") AS score
+            $match = $model->query('SELECT matchID, matchLength, matchDate, mapName, imageName, typeName, typeColor, group_concat(teamScore, " - ") AS score
             FROM tbl_Match INNER JOIN cst_MatchType ON matchTypeID_F = typeID INNER JOIN cst_Maps ON mapID = mapID_F INNER JOIN tbl_Team ON matchID = matchID_f
             WHERE matchID = '.$_GET["matchID"].'
             GROUP BY matchID, matchDate, mapName, imageName, typeName, typeColor
@@ -29,7 +24,7 @@
             $date = explode("-", $match["matchDate"]);
             $match["matchDate"] = $date[2].".".$date[1].".".$date[0];
 
-            $players = $db->query("SELECT playerID, playerName, teamName, teamID
+            $players = $model->query("SELECT playerID, playerName, teamName, teamID
                                     FROM tbl_Player INNER JOIN tbl_Team ON teamID = teamID_F
                                     WHERE matchID_F = ".$match["matchID"]." 
                                     ORDER BY teamName")->fetchAll();
@@ -46,7 +41,7 @@
         <div class="frame" style="padding: 20px; width: 100%; height: 440px; overflow: visible; box-sizing: border-box;">
             <?php
                 $teamID_F = $players[0]["teamID"] - ($players[0]["teamID"] % 2);
-                include './static/phpComponents/timeline.php';
+                include('./static/Model/Components/timeline.php');
             ?>
         </div>
     </body>

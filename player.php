@@ -3,14 +3,14 @@
         <title>
             StatWatch
         </title>
-        <link rel='stylesheet' href='/static/style.scss'>
-        <link href="/static/css-circular-prog-bar.css" rel="stylesheet"/>
+        <link rel='stylesheet' href='/static/CSS/style.scss'>
+        <link href="/static/CSS/css-circular-prog-bar.css" rel="stylesheet"/>
         <link href = "/static/fontawesome/css/all.css" rel="stylesheet"/>
-        <script src="/static/chart.min.js"></script>
-        <script src="/static/moment.js"></script>
-        <script src="/static/chartjs-adapter-moment.js"></script>
+        <script src="/static/JS/chart.min.js"></script>
+        <script src="/static/JS/moment.js"></script>
+        <script src="/static/JS/chartjs-adapter-moment.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/hammerjs@2.0.8"></script>
-        <script src="/static/chartjs-plugin-zoom.min.js"></script>
+        <script src="/static/JS/chartjs-plugin-zoom.min.js"></script>
     </head>
     <body>
         <?php
