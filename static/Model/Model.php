@@ -14,7 +14,7 @@
             }
         }
 
-        function Query($sqlStr){
+        function query($sqlStr){
             return $this -> db -> query($sqlStr);
         }
     }
