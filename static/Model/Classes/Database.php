@@ -8,7 +8,7 @@
             $this -> db = new PDO("sqlite:stats.db");
         }
 
-        public function Query($sqlStr){
+        public function query($sqlStr){
             return $this -> db -> query($sqlStr);
         }
 

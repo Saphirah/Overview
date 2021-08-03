@@ -4,22 +4,22 @@
             StatWatch
         </title>
 
-        <link rel='stylesheet' href='/static/style.scss'>
-        <link href="/static/css-circular-prog-bar.css" rel="stylesheet"/>
+        <link rel='stylesheet' href='/static/CSS/style.scss'>
+        <link href="/static/CSS/css-circular-prog-bar.css" rel="stylesheet"/>
         <link href = "/static/fontawesome/css/all.css" rel="stylesheet"/>
-        <script type="text/javascript" src="/static/chart.min.js"></script>
+        <script type="text/javascript" src="/static/JS/chart.min.js"></script>
     </head>
 
     <body>
         <!-- Header -->
-        <div class='navigation' style='background-image: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), url("static/Images/Maps_Header/kingsrow.jpg"); height: 170px;'>
+        <header class='navigation' style='background-image: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), url("static/Images/Maps_Header/kingsrow.jpg"); height: 170px;'>
             <div>
                 <h1>Overview</h0>
                 <h5 style="font-family: 'montseratLight';">
                     Overwatch Stat Analyzing Tool<br>
                 </h5>
             </div>
-        </div>
+        </header>
 
         <!-- Upload Field -->
         <div id="dragAndDropField" class='navigation enlargeField' style='background-image: linear-gradient(#2c3e5088, #2c3e5044); width: 50%; height: 250px; margin: 0 auto;' onclick="document.getElementById('file-input').click();"  ondrop="dropHandler(event);">
