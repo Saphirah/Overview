@@ -6,6 +6,7 @@
         <link rel='stylesheet' href='/static/css/style.scss'>
         <link href="/static/css/css-circular-prog-bar.css" rel="stylesheet"/>
         <link href = "/static/fontawesome/css/all.css" rel="stylesheet"/>
+        <script src="/static/JS/scrollFadeIn.js"></script>
     </head>
     <body>
         <?php
