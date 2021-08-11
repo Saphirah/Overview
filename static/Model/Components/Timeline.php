@@ -151,6 +151,10 @@
                         },
                         plugins: {
                             zoom: {
+                                pan:{
+                                    enabled: true,
+                                    mode: 'x'
+                                },
                                 zoom: {
                                     wheel: {
                                         enabled: true,
