@@ -137,6 +137,18 @@
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
+                        transitions:{
+                            show: {
+                                animations:{
+                                    visible: false
+                                }
+                            },
+                            hide: {
+                                animations:{
+                                    visible: false
+                                }
+                            }
+                        },
                         plugins: {
                             zoom: {
                                 zoom: {

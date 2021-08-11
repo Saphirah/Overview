@@ -18,9 +18,9 @@
         <!--Plugins-->
         <link href="/static/CSS/css-circular-prog-bar.css" rel="stylesheet"/>
         <script src="/static/JS/chart.min.js"></script>
-        <script src="/static/JS/moment.js"></script>
+        <script src="/static/JS/moment.min.js"></script>
         <script src="/static/JS/chartjs-adapter-moment.js"></script>
-        <script src="/static/JS/hammerjs.js"></script>
+        <script src="/static/JS/hammer.min.js"></script>
         <script src="/static/JS/chartjs-plugin-zoom.min.js"></script>
         
     </head>
@@ -53,7 +53,11 @@
                 var xhttp = new XMLHttpRequest();
                 xhttp.onreadystatechange = function() {
                     if (this.readyState == 4 && this.status == 200) {
-                    document.getElementById("content").innerHTML = this.responseText;
+                        var content = document.getElementById("content");
+                        content.innerHTML = this.responseText;
+                        var arr = content.getElementsByTagName('script')
+                        for (var n = 0; n < arr.length; n++)
+                            eval(arr[n].innerHTML)
                     }
                 };
                 xhttp.open("GET", pageURL, true);
