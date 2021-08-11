@@ -21,11 +21,13 @@ a, a:hover, a:focus, a:active {
     color: inherit;
 }
 
-iframe{
-    height: 100%;
+#content{
     width: calc(100% - 80px);
     margin-left: 80px;
-    background-image: url("/static/Images/Background/background.jpg");
+    /*background-image: url("/static/Images/Background/background.jpg");*/
+    padding: 50px;
+    font-family: "montseratNormal";
+    overflow: overlay;
 }
 body{
     background-image: url("/static/Images/Background/background.jpg");
@@ -34,6 +36,20 @@ body{
     background-position: center;
     background-size: cover;
 }
+
+body::-webkit-scrollbar {
+    width: 8px;               /* width of the entire scrollbar */
+    background: transparent; 
+    margin:0;
+    border: 0;
+}
+  body::-webkit-scrollbar-track {
+    background: transparent;        /* color of the tracking area */
+  }
+  body::-webkit-scrollbar-thumb {
+    background-color: rgb(50,50,50);
+    border-radius: 3px;
+  }
 .navigator{
     width: 80px;
     height: 100%;
@@ -42,6 +58,7 @@ body{
     transition: 0.5s;
     transition-property: width;
     overflow: hidden;
+    z-index: 100;
 }
 .navigator:hover{
     width: 250px;

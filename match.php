@@ -1,12 +1,4 @@
 <html>
-    <head>
-        <title>
-            StatWatch
-        </title>
-        <link rel='stylesheet' href='/static/CSS/style.scss'>
-        <link href="/static/CSS/css-circular-prog-bar.css" rel="stylesheet"/>
-        <link href = "/static/fontawesome/css/all.css" rel="stylesheet"/>
-    </head>
     <body>
         <?php
             include_once("static/Model/Model.php");
@@ -30,19 +22,13 @@
                                     ORDER BY teamName")->fetchAll();
         ?>
         <!-- Header -->
-        <div class='navigation' style='padding-bottom: 0;background-image: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), url(/static/Images/Maps_Header/kingsrow.jpg);'>
-            <div>
-                <h1 style='line-height = 50%;'>
-                    <?= $match["typeName"]. " on ". $match["mapName"]?>
-                </h1>
-            </div>
-        </div>
+        <?php
+            new Header($match["typeName"]. " on ". $match["mapName"]);
+        ?>
 
-        <div class="frame" style="padding: 20px; width: 100%; height: 440px; overflow: visible; box-sizing: border-box;">
-            <?php
-                $teamID_F = $players[0]["teamID"] - ($players[0]["teamID"] % 2);
-                include('./static/Model/Components/timeline.php');
-            ?>
-        </div>
+        <!--Timeline-->
+        <?php
+            new Timeline($players[0]["teamID"] - ($players[0]["teamID"] % 2));
+        ?>
     </body>
 </html>

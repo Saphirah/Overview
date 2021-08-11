@@ -1,27 +1,15 @@
 <html>
-    <head>
-        <title>
-            StatWatch
-        </title>
-        <link rel='stylesheet' href='/static/css/style.scss'>
-        <link href="/static/css/css-circular-prog-bar.css" rel="stylesheet"/>
-        <link href = "/static/fontawesome/css/all.css" rel="stylesheet"/>
-        <script src="/static/JS/scrollFadeIn.js"></script>
-    </head>
     <body>
         <?php
             include_once("static/Model/Model.php");
         ?>
 
         <!-- Header -->
-        <header class='navigation' style='background-image: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), url("static/Images/Maps_Header/kingsrow.jpg"); height: 170px;'>
-            <div>
-                <h1>Overview</h1>
-                <h5 style="font-family: 'montseratLight';">
-                    <?= isset($_SESSION['userName']) ? "Welcome back ".$_SESSION['userName']."!" : "Overwatch Stat Analyzing Tool" ?>
-                </h5>
-            </div>
-        </header>
+        <?php
+            $headerSubtitle = isset($_SESSION['userName']) ? "Welcome back ".$_SESSION['userName']."!" : "Overwatch Stat Analyzing Tool";
+            new Header("Overview", $headerSubtitle)
+        ?>
+
         <!-- Matches -->
         <?php
             $matches = $model->Query('SELECT matchID, matchDate, mapName, imageName, typeName, typeColor, group_concat(teamScore, "-") AS score
@@ -35,7 +23,7 @@
                     print("<div class=\"dateField\">" . $match['matchDate'] . "</div>");
                 }
                 print("
-                <a href=\"/match.php?matchID=" . $match['matchID'] . "\">
+                <a onclick='loadPage(\"match.php?matchID=" . $match['matchID'] . "\")'>
                     <article class=\"match enlargeField\" onclick=\"selectMatch_" . $match['matchID'] . "()\">
                         <header class=\"matchImage\" style=\"overflow: hidden; background-image: url('/static/Images/Maps_Prev/" . $match['imageName'] . ".jpg');\">
                             <div class=\"mapName\">" . $match['mapName'] . "</div>

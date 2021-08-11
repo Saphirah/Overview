@@ -1,6 +1,14 @@
 <?php
     session_start();
     
+    /*foreach (glob("static/Model/Components/*.php") as $filename)
+    {
+        include_once $filename;
+    }*/
+    include_once("static/Model/Components/Header.php");
+    include_once("static/Model/Components/Timeline.php");
+    include_once("static/Model/Components/StatField.php");
+
     include_once("static/Model/Classes/Account.php");
     include_once("static/Model/Classes/Database.php");
 

@@ -1,16 +1,4 @@
 <html>
-    <head>
-        <title>
-            StatWatch
-        </title>
-        <link rel='stylesheet' href='/static/CSS/style.scss'>
-        <link rel='stylesheet' href='/static/CSS/login.scss'>
-        <link rel='stylesheet' href='/static/CSS/customCheckbox.scss'>
-        <link href="/static/css-circular-prog-bar.css" rel="stylesheet"/>
-        <link href = "/static/fontawesome/css/all.css" rel="stylesheet"/>
-        <script type="text/javascript" src="/static/chart.min.js"></script>
-    </head>
-
     <body>
         <?php
             include_once("static/Model/Model.php");
@@ -27,15 +15,12 @@
             elseif(isset($_POST['registerUsername']) && isset($_POST['registerEmail']) && isset($_POST['registerPassword']))
                 Account::CreateNewAccount($_POST['registerUsername'], $_POST['registerEmail'], $_POST['registerPassword']);
         ?>
+        
         <!-- Header -->
-        <div class='navigation' style='padding-bottom: 140px;background-image: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), url(/static/Images/Maps_Header/kingsrow.jpg);'>
-            <div>
-                <h1>Overview</h0>
-                <h5 style="font-family: 'montseratLight';">
-                    Overwatch Stat Analyzing Tool<br>
-                </h5>
-            </div>
-        </div>
+        <?php
+            new Header("Overview", "Overwatch Stat Analyzing Tool");
+        ?>
+
         <!-- Login Field -->
         <div class="loginField" id="loginfield">
             <h1>LOGIN</h1>

@@ -42,8 +42,8 @@
     background-color: #323232;
     border-radius: 3px; 
     color: rgba(255,255,255,1);
-    padding: 20px;
-    padding-top: 0px;
+    padding: 10px;
+    padding-top: 20px;
     float:left;
     margin-right: 10px;
     margin-bottom: 10px;
@@ -69,7 +69,7 @@
     z-index: 1;
 }
 
-.navigation{
+.header{
     padding-top: 30px;
     padding-bottom: 40px;
     color: rgba(255,255,255,1);
@@ -85,6 +85,9 @@
     width: 100%;
     height: 130px;
     font-size: 16;
+    display: flex;
+    justify-content: center;
+    align-items: center;   
 }
 
 .match{
@@ -116,12 +119,14 @@
 
 .enlargeField{
     transition: 0.25s;
-    transition-property: transform, filter;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+    transition-property: transform, filter, box-shadow;
 }
 
 .enlargeField:hover{
     transform: scale(1.025);
     filter: brightness(110%);
+    box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
     cursor: pointer;
 }
 
@@ -152,31 +157,6 @@
 }
 
 *{box-sizing: border-box;}
-
-body{
-    font-family: "montseratNormal";
-    background-image: url("/static/Images/Background/background.jpg");
-    background-repeat:no-repeat; 
-    margin: 50px;
-    background-attachment: fixed;
-    background-position: center;
-    background-size: cover;
-    overflow: overlay;
-}
-
-body::-webkit-scrollbar {
-    width: 8px;               /* width of the entire scrollbar */
-    background: transparent; 
-    margin:0;
-    border: 0;
-}
-  body::-webkit-scrollbar-track {
-    background: transparent;        /* color of the tracking area */
-  }
-  body::-webkit-scrollbar-thumb {
-    background-color: rgb(50,50,50);
-    border-radius: 3px;
-  }
 
 table{
     width: 100%;
@@ -227,36 +207,36 @@ g{
 	border-radius: 50%;
 	}
 
-    .ko-progress-circle__slice, .ko-progress-circle__fill {
-        width:    120px;
-        height:   120px;
-        position: absolute;
-        backface-visibility: hidden;
-        transition: transform 1s;
-        border-radius: 50%;
-    }
+.ko-progress-circle__slice, .ko-progress-circle__fill {
+    width:    120px;
+    height:   120px;
+    position: absolute;
+    backface-visibility: hidden;
+    transition: transform 1s;
+    border-radius: 50%;
+}
 
-    .ko-progress-circle__slice {
-        clip: rect(0px, 120px, 120px, 120px/2);
-    }
+.ko-progress-circle__slice {
+    clip: rect(0px, 120px, 120px, 120px/2);
+}
 
-    .ko-progress-circle__fill {
-        clip: rect(0px, 120px/2, 120px, 0px);
-        background-color: #1291D4;
-    }
+.ko-progress-circle__fill {
+    clip: rect(0px, 120px/2, 120px, 0px);
+    background-color: #1291D4;
+}
 
-	.ko-progress-circle__overlay {
-		width:       105px;
-		height:      105px;
-		position:    absolute;
-		margin-left: (120px - 105px)/2;
-		margin-top:  (120px - 105px)/2;
+.ko-progress-circle__overlay {
+    width:       105px;
+    height:      105px;
+    position:    absolute;
+    margin-left: (120px - 105px)/2;
+    margin-top:  (120px - 105px)/2;
 
-		background-color: #fbfbfb;
-		border-radius: 50%;
-	}
+    background-color: #fbfbfb;
+    border-radius: 50%;
+}
 
-    [data-tooltip-bottom]:hover,
+[data-tooltip-bottom]:hover,
 [data-tooltip-left]:hover,
 [data-tooltip-right]:hover,
 [data-tooltip]:hover {
@@ -355,3 +335,15 @@ g{
 	margin-top: 15px;
 }
   
+
+#uploadFileField{
+    background-image: linear-gradient(#2c3e5088, #2c3e5044); 
+    width: 50%; 
+    height: 250px; 
+    margin: 0 auto;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;   
+    backdrop-filter: blur(8px);
+}
