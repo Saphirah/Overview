@@ -31,7 +31,7 @@
                         foreach($teams as $player){
                 ?>
 
-                    <div onclick="loadPage('/player.php?playerID=<?= $player[1] ?>');" 
+                    <div onclick="loadPage('player.php/?playerID=<?= $player[1] ?>');" 
                         class="timelineFrame enlargeField" data-tooltip="Click to open the player summary!" 
                         style="display: inline-block;width: 122%; border-top-right-radius: 0; border-bottom-right-radius: 0; position:relative; height: 21.4px;"><?= $player[0] ?></div>
 

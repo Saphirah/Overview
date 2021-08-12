@@ -8,6 +8,7 @@
     include_once("static/Model/Components/Header.php");
     include_once("static/Model/Components/Timeline.php");
     include_once("static/Model/Components/StatField.php");
+    include_once("static/Model/Components/CompareField.php");
 
     include_once("static/Model/Classes/Account.php");
     include_once("static/Model/Classes/Database.php");

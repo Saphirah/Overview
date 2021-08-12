@@ -1,8 +1,8 @@
 <html>
     <body>
         <?php
-            include_once("static/Model/Classes/BuildingBlocks.php");
 
+            include_once("static/Model/Model.php");
             if(!isset($_GET["playerID"])){
                 echo("Invalid Player ID");
                 exit();

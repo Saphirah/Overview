@@ -54,7 +54,7 @@ body::-webkit-scrollbar {
     width: 80px;
     height: 100%;
     background: #1a1a1a;
-    position: absolute;
+    position: fixed;
     transition: 0.5s;
     transition-property: width;
     overflow: hidden;

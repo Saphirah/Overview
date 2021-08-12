@@ -60,8 +60,10 @@
                             eval(arr[n].innerHTML)
                     }
                 };
-                xhttp.open("GET", pageURL, true);
-                window.history.pushState("page2", "Overview", "?pageURL="+pageURL+"");
+                pageURL = pageURL.split("pageURL=").pop().replaceAll("/?", "&").replaceAll("?", "&");
+                xhttp.open("GET", pageURL.replace("&", "?"), true);
+                window.history.pushState("page2", "Overview", "?pageURL="+pageURL);
+
                 xhttp.send();
             }
             window.addEventListener('popstate', (event) => {
@@ -71,7 +73,7 @@
             
             <?php
                 if(isset($_GET["pageURL"])){
-                    echo("loadPage('".$_GET["pageURL"]."')");
+                    echo("loadPage('".$_SERVER['REQUEST_URI']."')");
                 } else {
                     echo("loadPage('mainPage.php');");
                 }
